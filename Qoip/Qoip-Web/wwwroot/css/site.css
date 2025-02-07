@@ -1,0 +1,32 @@
+body {
+    background-color: #121212;
+    color: #ffffff;
+}
+
+.navbar {
+    background-color: #1e1e1e;
+}
+
+.hero {
+    text-align: center;
+    padding: 80px 20px;
+    background: linear-gradient(135deg, #1a1a1a, #292929);
+}
+
+.features {
+    padding: 50px 20px;
+}
+
+.feature-card {
+    background: #1e1e1e;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.footer {
+    text-align: center;
+    padding: 20px;
+    background-color: #1e1e1e;
+    margin-top: 50px;
+}

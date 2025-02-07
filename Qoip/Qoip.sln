@@ -1,11 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.12.35707.178 d17.12
+VisualStudioVersion = 17.12.35707.178
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qoip-NetTest", "Qoip-NetTest\Qoip-NetTest.csproj", "{5A67DF5C-A02A-4C88-B9E8-007B0C5FA1C8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qoip-Examples", "Qoip-Examples\Qoip-Examples.csproj", "{4DD0A648-D633-413E-9517-85BF9B476600}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qoip-Web", "Qoip-Web\Qoip-Web.csproj", "{F7FD1CB0-113A-4A6B-8D58-6DF5A6642A99}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{4DD0A648-D633-413E-9517-85BF9B476600}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4DD0A648-D633-413E-9517-85BF9B476600}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4DD0A648-D633-413E-9517-85BF9B476600}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F7FD1CB0-113A-4A6B-8D58-6DF5A6642A99}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F7FD1CB0-113A-4A6B-8D58-6DF5A6642A99}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F7FD1CB0-113A-4A6B-8D58-6DF5A6642A99}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F7FD1CB0-113A-4A6B-8D58-6DF5A6642A99}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
