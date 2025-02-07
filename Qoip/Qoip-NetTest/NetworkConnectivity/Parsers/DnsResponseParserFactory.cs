@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Qoip_NetTest.NetworkConnectivity.Parsers
+namespace Qoip.ZeroTrustNetwork.NetworkConnectivity.Parsers
 {
     public static class DnsResponseParserFactory
     {

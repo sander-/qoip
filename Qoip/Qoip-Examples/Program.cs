@@ -31,6 +31,21 @@ namespace Qoip_Examples
             var dnsLookupResponseCname = networkConnectivity.PerformDnsLookup("www.example.com", queryType: "CNAME");
             PrintResponse(dnsLookupResponseCname);
 
+            // Perform DNS lookup for an NS record
+            Console.WriteLine("Performing DNS lookup for an NS record...");
+            var dnsLookupResponseNs = networkConnectivity.PerformDnsLookup("example.com", queryType: "NS");
+            PrintResponse(dnsLookupResponseNs);
+
+            // Perform DNS lookup for an A record with a specific DNS server
+            // We use the result from the previous NS lookup to specify the DNS server
+            Console.WriteLine("Performing DNS lookup for an A record with a specific DNS server...");
+            var authoritativeNameServer = dnsLookupResponseNs.Data.Records.First();
+            // Get the IP address of the authoritative name server
+            var dnsLookupResponseNS = networkConnectivity.PerformDnsLookup(authoritativeNameServer, queryType: "A");
+            var authoritativeNameServerIp = dnsLookupResponseNS.Data.Records.First();
+            var dnsLookupResponseA = networkConnectivity.PerformDnsLookup("example.com", queryType: "A", dnsServer: authoritativeNameServerIp);
+            PrintResponse(dnsLookupResponseA);
+
             // Perform DNS lookup for a TXT record
             Console.WriteLine("Performing DNS lookup for a TXT record...");
             var dnsLookupResponseTxt = networkConnectivity.PerformDnsLookup("example.com", queryType: "TXT");
@@ -38,7 +53,7 @@ namespace Qoip_Examples
 
             // Perform DNS lookup for an MX record
             Console.WriteLine("Performing DNS lookup for an MX record...");
-            var dnsLookupResponseMx = networkConnectivity.PerformDnsLookup("example.com", queryType: "MX");
+            var dnsLookupResponseMx = networkConnectivity.PerformDnsLookup("qoip.com", queryType: "MX");
             PrintResponse(dnsLookupResponseMx);
 
             // Perform DNS lookup for a DNSKEY record
@@ -46,19 +61,14 @@ namespace Qoip_Examples
             var dnsLookupResponseDnskey = networkConnectivity.PerformDnsLookup("example.com", queryType: "DNSKEY");
             PrintResponse(dnsLookupResponseDnskey);
 
-            // Perform DNS lookup for an SRV record
-            Console.WriteLine("Performing DNS lookup for an SRV record...");
-            var dnsLookupResponseSrv = networkConnectivity.PerformDnsLookup("_sip._tcp.example.com", queryType: "SRV");
-            PrintResponse(dnsLookupResponseSrv);
-
             // Perform DNS lookup for an SOA record
             Console.WriteLine("Performing DNS lookup for an SOA record...");
-            var dnsLookupResponseSoa = networkConnectivity.PerformDnsLookup("example.com", queryType: "SOA");
+            var dnsLookupResponseSoa = networkConnectivity.PerformDnsLookup("example.com", queryType: "SOA", detailLevel: DetailLevel.Debug);
             PrintResponse(dnsLookupResponseSoa);
 
             // Perform DNS lookup for a TLSA record
             Console.WriteLine("Performing DNS lookup for a TLSA record...");
-            var dnsLookupResponseTlsa = networkConnectivity.PerformDnsLookup("_443._tcp.example.com", queryType: "TLSA");
+            var dnsLookupResponseTlsa = networkConnectivity.PerformDnsLookup("_443._tcp.good-pkixta.dane.huque.com", queryType: "TLSA");
             PrintResponse(dnsLookupResponseTlsa);
 
 

@@ -3,7 +3,7 @@ using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Net;
 using System.Text;
-using Qoip_NetTest.NetworkConnectivity.Parsers;
+using Qoip.ZeroTrustNetwork.NetworkConnectivity.Parsers;
 
 namespace Qoip.ZeroTrustNetwork.NetworkConnectivity
 {
@@ -64,15 +64,18 @@ namespace Qoip.ZeroTrustNetwork.NetworkConnectivity
                     var serverEndpoint = new IPEndPoint(dnsServerAddress.AddressFamily == AddressFamily.InterNetwork ? IPAddress.Any : IPAddress.IPv6Any, 0);
                     response = udpClient.Receive(ref serverEndpoint);
 
-                    // Process the response to extract IP addresses
-                    var (ipAddresses, isAuthoritative) = ParseDnsResponse(response);
+                    // Process the response to extract records
+                    var (records, isAuthoritative, ttl, additionalDetails) = ParseDnsResponse(response);
 
                     var dnsLookupResponse = new DnsLookupResponse
                     {
                         Server = dnsServer,
                         Address = dnsServerAddress.ToString(),
                         QueryType = queryType,
-                        Addresses = ipAddresses.ToList()
+                        Records = records.ToList(),
+                        IsAuthoritative = isAuthoritative,
+                        TTL = ttl,
+                        AdditionalDetails = additionalDetails
                     };
 
                     var message = "DNS lookup successful.";
@@ -90,13 +93,24 @@ namespace Qoip.ZeroTrustNetwork.NetworkConnectivity
             }
             catch (SocketException ex)
             {
-                return new Response<DnsLookupResponse>(ResponseStatus.Failure, null, $"DNS lookup failed: {ex.Message}");
+                var errorMessage = $"DNS lookup failed: {ex.Message}";
+                if (detailLevel == DetailLevel.Debug && readableQuery != null)
+                {
+                    errorMessage += $"\nQuery: {readableQuery}";
+                }
+                return new Response<DnsLookupResponse>(ResponseStatus.Failure, null, errorMessage);
             }
             catch (Exception ex)
             {
-                return new Response<DnsLookupResponse>(ResponseStatus.Failure, null, $"An error occurred: {ex.Message}");
+                var errorMessage = $"An error occurred: {ex.Message}";
+                if (detailLevel == DetailLevel.Debug && readableQuery != null)
+                {
+                    errorMessage += $"\nQuery: {readableQuery}";
+                }
+                return new Response<DnsLookupResponse>(ResponseStatus.Failure, null, errorMessage);
             }
         }
+
 
         private bool IsDnsServerReachable(string dnsServer)
         {
@@ -199,9 +213,10 @@ namespace Qoip.ZeroTrustNetwork.NetworkConnectivity
             throw new ArgumentException($"Unknown query type: {queryType}");
         }
 
-        private (string[] ipAddresses, bool isAuthoritative) ParseDnsResponse(byte[] response)
+        private (string[] records, bool isAuthoritative, int ttl, Dictionary<string, string> additionalDetails) ParseDnsResponse(byte[] response)
         {
-            var ipAddresses = new List<string>();
+            var records = new List<string>();
+            var additionalDetails = new Dictionary<string, string>();
             var answerCount = (response[6] << 8) | response[7];
             var isAuthoritative = (response[2] & 0x04) != 0;
             var offset = 12;
@@ -213,6 +228,8 @@ namespace Qoip.ZeroTrustNetwork.NetworkConnectivity
             }
             offset += 5; // Skip null byte and question type/class
 
+            int ttl = 0;
+
             for (var i = 0; i < answerCount; i++)
             {
                 if (offset + 12 > response.Length) // Ensure there's enough data for the header
@@ -222,7 +239,11 @@ namespace Qoip.ZeroTrustNetwork.NetworkConnectivity
 
                 offset += 2; // Skip name pointer
                 var type = (response[offset] << 8) | response[offset + 1];
-                offset += 8; // Skip type, class, TTL
+                offset += 2; // Skip type
+                offset += 2; // Skip class
+
+                ttl = (response[offset] << 24) | (response[offset + 1] << 16) | (response[offset + 2] << 8) | response[offset + 3];
+                offset += 4; // Skip TTL
                 var dataLength = (response[offset] << 8) | response[offset + 1];
                 offset += 2;
 
@@ -232,11 +253,12 @@ namespace Qoip.ZeroTrustNetwork.NetworkConnectivity
                 }
 
                 var parser = DnsResponseParserFactory.GetParser(type);
-                ipAddresses.AddRange(parser.Parse(response, ref offset, dataLength));
+                records.AddRange(parser.Parse(response, ref offset, dataLength, additionalDetails));
             }
 
-            return (ipAddresses.ToArray(), isAuthoritative);
+            return (records.ToArray(), isAuthoritative, ttl, additionalDetails);
         }
+
 
         private string BuildResponseInfo(DnsLookupResponse dnsLookupResponse, string domainName, bool isAuthoritative)
         {
@@ -246,7 +268,7 @@ namespace Qoip.ZeroTrustNetwork.NetworkConnectivity
             responseInfo.AppendLine();
             responseInfo.AppendLine(isAuthoritative ? "Authoritative answer:" : "Non-authoritative answer:");
             responseInfo.AppendLine($"Name:    {domainName}");
-            responseInfo.AppendLine("Addresses:  " + string.Join("\n          ", dnsLookupResponse.Addresses));
+            responseInfo.AppendLine("Records:  " + string.Join("\n          ", dnsLookupResponse.Records));
             return responseInfo.ToString();
         }
     }

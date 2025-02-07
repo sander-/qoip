@@ -2,13 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
-namespace Qoip_NetTest.NetworkConnectivity.Parsers
+namespace Qoip.ZeroTrustNetwork.NetworkConnectivity.Parsers
 {
     public class CaaRecordParser : IDnsResponseParser
     {
-        public IEnumerable<string> Parse(byte[] response, ref int offset, int dataLength)
+        public IEnumerable<string> Parse(byte[] response, ref int offset, int dataLength, Dictionary<string, string> additionalDetails)
         {
             if (dataLength < 5) // Ensure there's enough data for the CAA record
             {
@@ -28,7 +27,22 @@ namespace Qoip_NetTest.NetworkConnectivity.Parsers
             var value = Encoding.ASCII.GetString(response, offset, valueLength);
             offset += valueLength;
 
+            // Add the CAA record details to the dictionary of additional details
+            additionalDetails["Flags"] = flags.ToString();
+            additionalDetails["Tag"] = tag;
+            additionalDetails["Value"] = value;
+
             return new[] { $"Flags: {flags}, Tag: {tag}, Value: {value}" };
         }
     }
 }
+
+
+
+
+
+
+
+
+
+

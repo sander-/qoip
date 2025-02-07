@@ -2,13 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
-namespace Qoip_NetTest.NetworkConnectivity.Parsers
+namespace Qoip.ZeroTrustNetwork.NetworkConnectivity.Parsers
 {
     public class NsecRecordParser : IDnsResponseParser
     {
-        public IEnumerable<string> Parse(byte[] response, ref int offset, int dataLength)
+        public IEnumerable<string> Parse(byte[] response, ref int offset, int dataLength, Dictionary<string, string> additionalDetails)
         {
             var nextDomainName = ReadDomainName(response, ref offset);
             var typeBitMaps = new List<string>();
@@ -32,6 +31,10 @@ namespace Qoip_NetTest.NetworkConnectivity.Parsers
                     }
                 }
             }
+
+            // Add the NSEC record details to the dictionary of additional details
+            additionalDetails["NextDomainName"] = nextDomainName;
+            additionalDetails["TypeBitMaps"] = string.Join(", ", typeBitMaps);
 
             return new[] { $"NextDomainName: {nextDomainName}, TypeBitMaps: {string.Join(", ", typeBitMaps)}" };
         }
@@ -58,3 +61,7 @@ namespace Qoip_NetTest.NetworkConnectivity.Parsers
         }
     }
 }
+
+
+
+

@@ -2,13 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
-namespace Qoip_NetTest.NetworkConnectivity.Parsers
+namespace Qoip.ZeroTrustNetwork.NetworkConnectivity.Parsers
 {
     public class DnskeyRecordParser : IDnsResponseParser
     {
-        public IEnumerable<string> Parse(byte[] response, ref int offset, int dataLength)
+        public IEnumerable<string> Parse(byte[] response, ref int offset, int dataLength, Dictionary<string, string> additionalDetails)
         {
             if (dataLength < 4) // Ensure there's enough data for the DNSKEY record
             {
@@ -23,7 +22,20 @@ namespace Qoip_NetTest.NetworkConnectivity.Parsers
             var publicKey = Convert.ToBase64String(response, offset, dataLength - 4);
             offset += dataLength - 4;
 
+            // Add the DNSKEY record details to the dictionary of additional details
+            additionalDetails["Flags"] = flags.ToString();
+            additionalDetails["Protocol"] = protocol.ToString();
+            additionalDetails["Algorithm"] = algorithm.ToString();
+            additionalDetails["PublicKey"] = publicKey;
+
             return new[] { $"Flags: {flags}, Protocol: {protocol}, Algorithm: {algorithm}, PublicKey: {publicKey}" };
         }
     }
 }
+
+
+
+
+
+
+

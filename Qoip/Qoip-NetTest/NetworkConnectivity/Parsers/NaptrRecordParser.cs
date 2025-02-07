@@ -2,13 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
-namespace Qoip_NetTest.NetworkConnectivity.Parsers
+namespace Qoip.ZeroTrustNetwork.NetworkConnectivity.Parsers
 {
     public class NaptrRecordParser : IDnsResponseParser
     {
-        public IEnumerable<string> Parse(byte[] response, ref int offset, int dataLength)
+        public IEnumerable<string> Parse(byte[] response, ref int offset, int dataLength, Dictionary<string, string> additionalDetails)
         {
             if (dataLength < 13) // Ensure there's enough data for the NAPTR record
             {
@@ -23,6 +22,14 @@ namespace Qoip_NetTest.NetworkConnectivity.Parsers
             var services = ReadString(response, ref offset);
             var regexp = ReadString(response, ref offset);
             var replacement = ReadDomainName(response, ref offset);
+
+            // Add the NAPTR record details to the dictionary of additional details
+            additionalDetails["Order"] = order.ToString();
+            additionalDetails["Preference"] = preference.ToString();
+            additionalDetails["Flags"] = flags;
+            additionalDetails["Services"] = services;
+            additionalDetails["Regexp"] = regexp;
+            additionalDetails["Replacement"] = replacement;
 
             return new[] { $"Order: {order}, Preference: {preference}, Flags: {flags}, Services: {services}, Regexp: {regexp}, Replacement: {replacement}" };
         }
@@ -57,3 +64,9 @@ namespace Qoip_NetTest.NetworkConnectivity.Parsers
         }
     }
 }
+
+
+
+
+
+

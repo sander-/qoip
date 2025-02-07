@@ -2,13 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
-namespace Qoip_NetTest.NetworkConnectivity.Parsers
+namespace Qoip.ZeroTrustNetwork.NetworkConnectivity.Parsers
 {
     public class Nsec3RecordParser : IDnsResponseParser
     {
-        public IEnumerable<string> Parse(byte[] response, ref int offset, int dataLength)
+        public IEnumerable<string> Parse(byte[] response, ref int offset, int dataLength, Dictionary<string, string> additionalDetails)
         {
             if (dataLength < 5) // Ensure there's enough data for the NSEC3 record
             {
@@ -51,7 +50,20 @@ namespace Qoip_NetTest.NetworkConnectivity.Parsers
                 }
             }
 
+            // Add the NSEC3 record details to the dictionary of additional details
+            additionalDetails["HashAlgorithm"] = hashAlgorithm.ToString();
+            additionalDetails["Flags"] = flags.ToString();
+            additionalDetails["Iterations"] = iterations.ToString();
+            additionalDetails["Salt"] = salt;
+            additionalDetails["NextHashedOwnerName"] = nextHashedOwnerName;
+            additionalDetails["TypeBitMaps"] = string.Join(", ", typeBitMaps);
+
             return new[] { $"HashAlgorithm: {hashAlgorithm}, Flags: {flags}, Iterations: {iterations}, Salt: {salt}, NextHashedOwnerName: {nextHashedOwnerName}, TypeBitMaps: {string.Join(", ", typeBitMaps)}" };
         }
     }
 }
+
+
+
+
+

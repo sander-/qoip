@@ -3,13 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Text;
-using System.Threading.Tasks;
 
-namespace Qoip_NetTest.NetworkConnectivity.Parsers
+namespace Qoip.ZeroTrustNetwork.NetworkConnectivity.Parsers
 {
     public class AaaaRecordParser : IDnsResponseParser
     {
-        public IEnumerable<string> Parse(byte[] response, ref int offset, int dataLength)
+        public IEnumerable<string> Parse(byte[] response, ref int offset, int dataLength, Dictionary<string, string> additionalDetails)
         {
             if (dataLength != 16) // IPv6 addresses are 16 bytes long
             {
@@ -24,6 +23,10 @@ namespace Qoip_NetTest.NetworkConnectivity.Parsers
                 response[offset + 12], response[offset + 13], response[offset + 14], response[offset + 15]
             });
             offset += dataLength;
+
+            // Add the AAAA record to the dictionary of additional details
+            additionalDetails["AAAA Record"] = ip.ToString();
+
             return new[] { ip.ToString() };
         }
     }

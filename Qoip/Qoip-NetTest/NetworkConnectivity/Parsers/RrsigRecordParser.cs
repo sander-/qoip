@@ -2,13 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
-namespace Qoip_NetTest.NetworkConnectivity.Parsers
+namespace Qoip.ZeroTrustNetwork.NetworkConnectivity.Parsers
 {
     public class RrsigRecordParser : IDnsResponseParser
     {
-        public IEnumerable<string> Parse(byte[] response, ref int offset, int dataLength)
+        public IEnumerable<string> Parse(byte[] response, ref int offset, int dataLength, Dictionary<string, string> additionalDetails)
         {
             if (dataLength < 18) // Ensure there's enough data for the RRSIG record
             {
@@ -27,6 +26,17 @@ namespace Qoip_NetTest.NetworkConnectivity.Parsers
             var signerName = ReadDomainName(response, ref offset);
             var signature = Convert.ToBase64String(response, offset, dataLength - (offset - 18));
 
+            // Add the RRSIG record details to the dictionary of additional details
+            additionalDetails["TypeCovered"] = typeCovered.ToString();
+            additionalDetails["Algorithm"] = algorithm.ToString();
+            additionalDetails["Labels"] = labels.ToString();
+            additionalDetails["OriginalTTL"] = originalTtl.ToString();
+            additionalDetails["SignatureExpiration"] = signatureExpiration.ToString();
+            additionalDetails["SignatureInception"] = signatureInception.ToString();
+            additionalDetails["KeyTag"] = keyTag.ToString();
+            additionalDetails["SignerName"] = signerName;
+            additionalDetails["Signature"] = signature;
+
             return new[] { $"TypeCovered: {typeCovered}, Algorithm: {algorithm}, Labels: {labels}, OriginalTTL: {originalTtl}, SignatureExpiration: {signatureExpiration}, SignatureInception: {signatureInception}, KeyTag: {keyTag}, SignerName: {signerName}, Signature: {signature}" };
         }
 
@@ -36,19 +46,34 @@ namespace Qoip_NetTest.NetworkConnectivity.Parsers
             var length = response[offset++];
             while (length != 0)
             {
-                if (offset + length > response.Length) // Ensure there's enough data for the label
+                if ((length & 0xC0) == 0xC0) // Pointer
                 {
-                    throw new IndexOutOfRangeException("Response data is incomplete or corrupted.");
+                    var pointerOffset = ((length & 0x3F) << 8) | response[offset++];
+                    var savedOffset = offset;
+                    offset = pointerOffset;
+                    domainName.Append(ReadDomainName(response, ref offset));
+                    offset = savedOffset;
+                    break;
                 }
-                domainName.Append(Encoding.ASCII.GetString(response, offset, length));
-                offset += length;
-                length = response[offset++];
-                if (length != 0)
+                else
                 {
-                    domainName.Append(".");
+                    if (offset + length > response.Length) // Ensure there's enough data for the label
+                    {
+                        throw new IndexOutOfRangeException("Response data is incomplete or corrupted.");
+                    }
+                    domainName.Append(Encoding.ASCII.GetString(response, offset, length));
+                    offset += length;
+                    length = response[offset++];
+                    if (length != 0)
+                    {
+                        domainName.Append(".");
+                    }
                 }
             }
             return domainName.ToString();
         }
     }
 }
+
+
+
