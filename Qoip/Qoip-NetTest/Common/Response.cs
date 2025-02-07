@@ -3,10 +3,10 @@ namespace Qoip.ZeroTrustNetwork.Common
     public class Response<T>
     {
         public ResponseStatus Status { get; set; }
-        public T Data { get; set; }
+        public T? Data { get; set; }
         public string Message { get; set; }
 
-        public Response(ResponseStatus status, T data, string message)
+        public Response(ResponseStatus status, T? data, string message)
         {
             Status = status;
             Data = data;

@@ -1,4 +1,5 @@
 using Qoip.ZeroTrustNetwork.Common;
+using Qoip_NetTest.NetworkConnectivity;
 
 namespace Qoip.ZeroTrustNetwork.NetworkConnectivity
 {
@@ -8,7 +9,7 @@ namespace Qoip.ZeroTrustNetwork.NetworkConnectivity
         Response<bool> CheckNetworkAccess(string ipAddress);
         Response<bool> CheckFirewallRules(string ipAddress);
         Response<bool> CheckNetworkSegmentation(string sourceIp, string destinationIp);
-        public Response<DnsLookupResponse> PerformDnsLookup(string domainName, string dnsServer = null, int timeout = 5000, DetailLevel detailLevel = DetailLevel.Ok, string queryType="A");
+        public Response<DnsResponse> ExecuteDnsRequest(string domainName, string dnsServer = null, int timeout = 5000, DetailLevel detailLevel = DetailLevel.Ok, string queryType="A");
     }
 }
 

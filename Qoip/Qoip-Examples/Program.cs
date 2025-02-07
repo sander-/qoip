@@ -8,67 +8,73 @@ namespace Qoip_Examples
         static void Main(string[] args)
         {
 
-            // Sample use case for PerformDnsLookup
+            // Sample use case for ExecuteDnsRequest
             var networkConnectivity = new NetworkConnectivity();
 
             // Perform DNS lookup with default detail level (Ok)
             Console.WriteLine("Performing DNS lookup with default detail level (Ok)...");
-            var dnsLookupResponseOk = networkConnectivity.PerformDnsLookup("example.com");
+            var dnsLookupResponseOk = networkConnectivity.ExecuteDnsRequest("example.com");
             PrintResponse(dnsLookupResponseOk);
 
             // Perform DNS lookup with Info detail level
             Console.WriteLine("Performing DNS lookup with Info detail level...");
-            var dnsLookupResponseInfo = networkConnectivity.PerformDnsLookup("example.com", detailLevel: DetailLevel.Info);
+            var dnsLookupResponseInfo = networkConnectivity.ExecuteDnsRequest("example.com", detailLevel: DetailLevel.Info);
             PrintResponse(dnsLookupResponseInfo);
 
             // Perform DNS lookup with Debug detail level
             Console.WriteLine("Performing DNS lookup with Debug detail level...");
-            var dnsLookupResponseDebug = networkConnectivity.PerformDnsLookup("example.com", detailLevel: DetailLevel.Debug);
+            var dnsLookupResponseDebug = networkConnectivity.ExecuteDnsRequest("example.com", detailLevel: DetailLevel.Debug);
             PrintResponse(dnsLookupResponseDebug);
 
             // Perform DNS lookup for a CNAME record
             Console.WriteLine("Performing DNS lookup for a CNAME record...");
-            var dnsLookupResponseCname = networkConnectivity.PerformDnsLookup("www.example.com", queryType: "CNAME");
+            var dnsLookupResponseCname = networkConnectivity.ExecuteDnsRequest("www.example.com", queryType: "CNAME");
             PrintResponse(dnsLookupResponseCname);
 
             // Perform DNS lookup for an NS record
             Console.WriteLine("Performing DNS lookup for an NS record...");
-            var dnsLookupResponseNs = networkConnectivity.PerformDnsLookup("example.com", queryType: "NS");
+            var dnsLookupResponseNs = networkConnectivity.ExecuteDnsRequest("example.com", queryType: "NS");
             PrintResponse(dnsLookupResponseNs);
 
             // Perform DNS lookup for an A record with a specific DNS server
             // We use the result from the previous NS lookup to specify the DNS server
             Console.WriteLine("Performing DNS lookup for an A record with a specific DNS server...");
-            var authoritativeNameServer = dnsLookupResponseNs.Data.Records.First();
-            // Get the IP address of the authoritative name server
-            var dnsLookupResponseNS = networkConnectivity.PerformDnsLookup(authoritativeNameServer, queryType: "A");
-            var authoritativeNameServerIp = dnsLookupResponseNS.Data.Records.First();
-            var dnsLookupResponseA = networkConnectivity.PerformDnsLookup("example.com", queryType: "A", dnsServer: authoritativeNameServerIp);
+            var dnsLookupResponseA = networkConnectivity
+                .WithQueryType("NS")
+                .ExecuteDnsRequest("example.com")
+                .Then(result => networkConnectivity
+                    .WithQueryType("A")
+                    .ExecuteDnsRequest(result.FirstRecord)
+                .Then(result => networkConnectivity
+                    .WithDnsServer(result.FirstRecord)
+                    .WithQueryType("A")
+                    .ExecuteDnsRequest("example.com")));
+
             PrintResponse(dnsLookupResponseA);
 
             // Perform DNS lookup for a TXT record
             Console.WriteLine("Performing DNS lookup for a TXT record...");
-            var dnsLookupResponseTxt = networkConnectivity.PerformDnsLookup("example.com", queryType: "TXT");
+            var dnsLookupResponseTxt = networkConnectivity.ExecuteDnsRequest("example.com", queryType: "TXT");
             PrintResponse(dnsLookupResponseTxt);
 
             // Perform DNS lookup for an MX record
             Console.WriteLine("Performing DNS lookup for an MX record...");
-            var dnsLookupResponseMx = networkConnectivity.PerformDnsLookup("qoip.com", queryType: "MX");
+            var dnsLookupResponseMx = networkConnectivity.ExecuteDnsRequest("qoip.com", queryType: "MX");
             PrintResponse(dnsLookupResponseMx);
 
             // Perform DNS lookup for a DNSKEY record
             Console.WriteLine("Performing DNS lookup for a DNSKEY record...");
-            var dnsLookupResponseDnskey = networkConnectivity.PerformDnsLookup("example.com", queryType: "DNSKEY");
+            var dnsLookupResponseDnskey = networkConnectivity.ExecuteDnsRequest("example.com", queryType: "DNSKEY");
             PrintResponse(dnsLookupResponseDnskey);
 
             // Perform DNS lookup for an SOA record
             Console.WriteLine("Performing DNS lookup for an SOA record...");
-            var dnsLookupResponseSoa = networkConnectivity.PerformDnsLookup("example.com", queryType: "SOA", detailLevel: DetailLevel.Debug);
+            var dnsLookupResponseSoa = networkConnectivity.ExecuteDnsRequest("example.com", queryType: "SOA", detailLevel: DetailLevel.Debug);
             PrintResponse(dnsLookupResponseSoa);
 
             // Perform DNS lookup for a TLSA record
             Console.WriteLine("Performing DNS lookup for a TLSA record...");
-            var dnsLookupResponseTlsa = networkConnectivity.PerformDnsLookup("_443._tcp.good-pkixta.dane.huque.com", queryType: "TLSA");
+            var dnsLookupResponseTlsa = networkConnectivity.ExecuteDnsRequest("_443._tcp.good-pkixta.dane.huque.com", queryType: "TLSA");
             PrintResponse(dnsLookupResponseTlsa);
 
 
