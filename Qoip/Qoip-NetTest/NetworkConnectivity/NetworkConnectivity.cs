@@ -1,9 +1,9 @@
 using Qoip.ZeroTrustNetwork.Common;
-using Qoip.ZeroTrustNetwork.NetworkConnectivity;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Net;
 using System.Text;
+using Qoip_NetTest.NetworkConnectivity.Parsers;
 
 namespace Qoip.ZeroTrustNetwork.NetworkConnectivity
 {
@@ -26,6 +26,7 @@ namespace Qoip.ZeroTrustNetwork.NetworkConnectivity
             // Implement network segmentation check logic here
             return new Response<bool>(ResponseStatus.Ok, true, "Network segmentation check passed.");
         }
+
 
         public Response<DnsLookupResponse> PerformDnsLookup(string domainName, string dnsServer = null, int timeout = 5000, DetailLevel detailLevel = DetailLevel.Ok, string queryType = "A")
         {
@@ -230,68 +231,8 @@ namespace Qoip.ZeroTrustNetwork.NetworkConnectivity
                     throw new IndexOutOfRangeException("Response data is incomplete or corrupted.");
                 }
 
-                if (type == 1 && dataLength == 4) // Type A
-                {
-                    var ip = new IPAddress(new[] { response[offset], response[offset + 1], response[offset + 2], response[offset + 3] });
-                    ipAddresses.Add(ip.ToString());
-                    offset += dataLength;
-                }
-                else if (type == 5) // Type CNAME
-                {
-                    var cname = new StringBuilder();
-                    var length = response[offset++];
-                    while (length != 0)
-                    {
-                        if (offset + length > response.Length) // Ensure there's enough data for the label
-                        {
-                            throw new IndexOutOfRangeException("Response data is incomplete or corrupted.");
-                        }
-                        cname.Append(Encoding.ASCII.GetString(response, offset, length));
-                        offset += length;
-                        length = response[offset++];
-                        if (length != 0)
-                        {
-                            cname.Append(".");
-                        }
-                    }
-                    ipAddresses.Add(cname.ToString());
-                }
-                else if (type == 15) // Type MX
-                {
-                    offset += 2; // Skip preference
-                    var mx = new StringBuilder();
-                    var length = response[offset++];
-                    while (length != 0)
-                    {
-                        if (offset + length > response.Length) // Ensure there's enough data for the label
-                        {
-                            throw new IndexOutOfRangeException("Response data is incomplete or corrupted.");
-                        }
-                        mx.Append(Encoding.ASCII.GetString(response, offset, length));
-                        offset += length;
-                        length = response[offset++];
-                        if (length != 0)
-                        {
-                            mx.Append(".");
-                        }
-                    }
-                    ipAddresses.Add(mx.ToString());
-                }
-                else if (type == 16) // Type TXT
-                {
-                    var txtLength = response[offset++];
-                    if (offset + txtLength > response.Length) // Ensure there's enough data for the text
-                    {
-                        throw new IndexOutOfRangeException("Response data is incomplete or corrupted.");
-                    }
-                    var txt = Encoding.ASCII.GetString(response, offset, txtLength);
-                    ipAddresses.Add(txt);
-                    offset += txtLength;
-                }
-                else
-                {
-                    offset += dataLength;
-                }
+                var parser = DnsResponseParserFactory.GetParser(type);
+                ipAddresses.AddRange(parser.Parse(response, ref offset, dataLength));
             }
 
             return (ipAddresses.ToArray(), isAuthoritative);

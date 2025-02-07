@@ -7,28 +7,59 @@ namespace Qoip_Examples
     {
         static void Main(string[] args)
         {
+
             // Sample use case for PerformDnsLookup
             var networkConnectivity = new NetworkConnectivity();
 
             // Perform DNS lookup with default detail level (Ok)
+            Console.WriteLine("Performing DNS lookup with default detail level (Ok)...");
             var dnsLookupResponseOk = networkConnectivity.PerformDnsLookup("example.com");
             PrintResponse(dnsLookupResponseOk);
 
             // Perform DNS lookup with Info detail level
+            Console.WriteLine("Performing DNS lookup with Info detail level...");
             var dnsLookupResponseInfo = networkConnectivity.PerformDnsLookup("example.com", detailLevel: DetailLevel.Info);
             PrintResponse(dnsLookupResponseInfo);
 
             // Perform DNS lookup with Debug detail level
+            Console.WriteLine("Performing DNS lookup with Debug detail level...");
             var dnsLookupResponseDebug = networkConnectivity.PerformDnsLookup("example.com", detailLevel: DetailLevel.Debug);
             PrintResponse(dnsLookupResponseDebug);
 
             // Perform DNS lookup for a CNAME record
+            Console.WriteLine("Performing DNS lookup for a CNAME record...");
             var dnsLookupResponseCname = networkConnectivity.PerformDnsLookup("www.example.com", queryType: "CNAME");
             PrintResponse(dnsLookupResponseCname);
 
             // Perform DNS lookup for a TXT record
+            Console.WriteLine("Performing DNS lookup for a TXT record...");
             var dnsLookupResponseTxt = networkConnectivity.PerformDnsLookup("example.com", queryType: "TXT");
             PrintResponse(dnsLookupResponseTxt);
+
+            // Perform DNS lookup for an MX record
+            Console.WriteLine("Performing DNS lookup for an MX record...");
+            var dnsLookupResponseMx = networkConnectivity.PerformDnsLookup("example.com", queryType: "MX");
+            PrintResponse(dnsLookupResponseMx);
+
+            // Perform DNS lookup for a DNSKEY record
+            Console.WriteLine("Performing DNS lookup for a DNSKEY record...");
+            var dnsLookupResponseDnskey = networkConnectivity.PerformDnsLookup("example.com", queryType: "DNSKEY");
+            PrintResponse(dnsLookupResponseDnskey);
+
+            // Perform DNS lookup for an SRV record
+            Console.WriteLine("Performing DNS lookup for an SRV record...");
+            var dnsLookupResponseSrv = networkConnectivity.PerformDnsLookup("_sip._tcp.example.com", queryType: "SRV");
+            PrintResponse(dnsLookupResponseSrv);
+
+            // Perform DNS lookup for an SOA record
+            Console.WriteLine("Performing DNS lookup for an SOA record...");
+            var dnsLookupResponseSoa = networkConnectivity.PerformDnsLookup("example.com", queryType: "SOA");
+            PrintResponse(dnsLookupResponseSoa);
+
+            // Perform DNS lookup for a TLSA record
+            Console.WriteLine("Performing DNS lookup for a TLSA record...");
+            var dnsLookupResponseTlsa = networkConnectivity.PerformDnsLookup("_443._tcp.example.com", queryType: "TLSA");
+            PrintResponse(dnsLookupResponseTlsa);
 
 
             //// Sample use case for CheckNetworkAccess
