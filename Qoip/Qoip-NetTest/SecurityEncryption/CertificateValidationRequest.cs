@@ -16,10 +16,11 @@ namespace Qoip.ZeroTrustNetwork.SecurityEncryption
         public DetailLevel DetailLevel { get; } = DetailLevel.Ok;
 
         public string Url { get; }
-
-        public CertificateValidationRequest(string url)
+        public int ExpirationWarningThresholdInDays { get; }
+        public CertificateValidationRequest(string url, int expirationWarningThresholdInDays = 0)
         {
             Url = url;
+            ExpirationWarningThresholdInDays = expirationWarningThresholdInDays;
         }
 
         public Response<CertificateValidationResponse> Execute()
@@ -28,6 +29,7 @@ namespace Qoip.ZeroTrustNetwork.SecurityEncryption
             {
                 CertificateValidationResponse certificateDetails = null;
                 string errorMessage = null;
+                ResponseStatus responseStatus = ResponseStatus.Ok;
 
                 httpClientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) =>
                 {
@@ -40,6 +42,11 @@ namespace Qoip.ZeroTrustNetwork.SecurityEncryption
                     bool isValid = chain.Build(cert);
                     if (isValid && sslPolicyErrors == SslPolicyErrors.None)
                     {
+                        // Check if the certificate is expiring soon
+                        if (ExpirationWarningThresholdInDays > 0 && cert.NotAfter <= DateTime.Now.AddDays(ExpirationWarningThresholdInDays))
+                        {
+                            responseStatus = ResponseStatus.Warning;
+                        }
                         return true; // No SSL policy errors and certificate is valid
                     }
                     else
@@ -68,6 +75,7 @@ namespace Qoip.ZeroTrustNetwork.SecurityEncryption
                             errorMessage = $"Certificate validation failed: {sslPolicyErrors}";
                         }
 
+                        responseStatus = ResponseStatus.Failure;
                         return false;
                     }
                 };
@@ -78,7 +86,10 @@ namespace Qoip.ZeroTrustNetwork.SecurityEncryption
                     var response = httpClient.GetAsync(Url).Result;
                     if (response.IsSuccessStatusCode && certificateDetails != null)
                     {
-                        return new Response<CertificateValidationResponse>(ResponseStatus.Ok, certificateDetails, "Certificate is valid.");
+                        string message = responseStatus == ResponseStatus.Warning
+                            ? $"Certificate is expiring on {certificateDetails.ValidTo:yyyy-MM-dd}. It is within the threshold of {ExpirationWarningThresholdInDays} days."
+                            : "Certificate is valid.";
+                        return new Response<CertificateValidationResponse>(responseStatus, certificateDetails, message);
                     }
                     else
                     {
@@ -166,10 +177,11 @@ namespace Qoip.ZeroTrustNetwork.SecurityEncryption
                 Version = cert.Version,
                 Algorithm = cert.SignatureAlgorithm.FriendlyName,
                 Extensions = extensionData,
-                AlternativeNames = alternativeNames
+                AlternativeNames = alternativeNames,
+                ValidFrom = cert.NotBefore,
+                ValidTo = cert.NotAfter
             };
         }
-
 
         private List<string> ParseSctListExtension(X509Extension extension)
         {

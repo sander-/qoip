@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace Qoip.ZeroTrustNetwork.SecurityEncryption
@@ -18,6 +20,8 @@ namespace Qoip.ZeroTrustNetwork.SecurityEncryption
         public string Usage { get; set; }
         public List<string> AlternativeNames { get; set; }
         public Dictionary<string, List<string>> Extensions { get; set; }
+        public DateTime ValidFrom { get; set; } 
+        public DateTime ValidTo { get; set; }   
 
         public override string ToString()
         {

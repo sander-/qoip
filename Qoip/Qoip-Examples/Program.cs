@@ -20,19 +20,31 @@ namespace Qoip_Examples
 
             // Validate TLS for a given URL
             Console.WriteLine("Validating TLS for a given URL...");
-            var tlsValidationResponseA = securityEncryption.ValidateTLS("https://test-ev-rsa.ssl.com/");
+            var tlsValidationResponseA = securityEncryption.ValidateCertificate("https://test-ev-rsa.ssl.com/");
             PrintResponse(tlsValidationResponseA);
 
             // Validate TLS for a given URL
             Console.WriteLine("Validating TLS for a given URL known to be expired...");
-            var tlsValidationResponseB = securityEncryption.ValidateTLS("https://expired-rsa-dv.ssl.com/");
+            var tlsValidationResponseB = securityEncryption.ValidateCertificate("https://expired-rsa-dv.ssl.com/");
             PrintResponse(tlsValidationResponseB);
 
             // Validate TLS for a revoked certificate
             Console.WriteLine("Validating TLS for a given URL known to have a revoked certificate...");
-            var tlsValidationResponseC = securityEncryption.ValidateTLS("https://revoked-rsa-dv.ssl.com/");
+            var tlsValidationResponseC = securityEncryption.ValidateCertificate("https://revoked-rsa-dv.ssl.com/");
             PrintResponse(tlsValidationResponseC);
 
+            // Use a Fluent API to get the expiration date of a certificate
+            Console.WriteLine("Getting the expiration date of a certificate using a Fluent API...");
+            var expirationDateFluent = securityEncryption
+                    .WithCertificateAt("https://test-ev-rsa.ssl.com/")
+                    .GetExpiration();
+            Console.WriteLine($"Expiration date: {expirationDateFluent}");
+
+            // Validate TLS for a certificate that is expiring in n number of days
+            Console.WriteLine("Validating TLS for a given URL known to have a certificate that is expiring in n days...");            
+            var daysUntilExpiration = (expirationDateFluent - DateTime.Now).Days + 2;
+            var tlsValidationResponseD = securityEncryption.ValidateCertificate("https://test-ev-rsa.ssl.com/", daysUntilExpiration);
+            PrintResponse(tlsValidationResponseD);
         }
 
         static private void NetworkConnectivityExamples()
