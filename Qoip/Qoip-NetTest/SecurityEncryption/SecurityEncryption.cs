@@ -1,11 +1,15 @@
+using Qoip.ZeroTrustNetwork.Common;
+using Qoip.ZeroTrustNetwork.NetworkConnectivity;
+using Qoip.ZeroTrustNetwork.SecurityEncryption;
+
 namespace Qoip.ZeroTrustNetwork.SecurityEncryption
 {
     public class SecurityEncryption : ISecurityEncryption
     {
-        public ISecurityEncryption ValidateTLS(string url)
+        public Response<CertificateValidationResponse> ValidateTLS(string url)
         {
-            // Implement TLS validation logic here
-            return this;
+            var request = new CertificateValidationRequest(url);
+            return request.Execute();
         }
 
         public ISecurityEncryption ValidateCertificates(string certificatePath)

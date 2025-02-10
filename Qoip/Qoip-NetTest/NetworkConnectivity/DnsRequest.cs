@@ -3,7 +3,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using Qoip.ZeroTrustNetwork.NetworkConnectivity.Parsers;
-using Qoip_NetTest.NetworkConnectivity;
+using Qoip.ZeroTrustNetwork.NetworkConnectivity;
 
 namespace Qoip.ZeroTrustNetwork.NetworkConnectivity
 {

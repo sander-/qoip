@@ -1,10 +1,12 @@
+using Qoip.ZeroTrustNetwork.Common;
+using Qoip.ZeroTrustNetwork.SecurityEncryption;
+
 namespace Qoip.ZeroTrustNetwork.SecurityEncryption
 {
     // Security & Encryption
     public interface ISecurityEncryption
     {
-        ISecurityEncryption ValidateTLS(string url);
-        ISecurityEncryption ValidateCertificates(string certificatePath);
-        ISecurityEncryption ValidateEncryptedCommunication(string message);
+        Response<CertificateValidationResponse> ValidateTLS(string url);
+        
     }
 }

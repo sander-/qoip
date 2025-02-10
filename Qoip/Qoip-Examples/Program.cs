@@ -1,11 +1,35 @@
 ﻿using Qoip.ZeroTrustNetwork.Common;
 using Qoip.ZeroTrustNetwork.NetworkConnectivity;
+using Qoip.ZeroTrustNetwork.SecurityEncryption;
 
 namespace Qoip_Examples
 {
     internal class Program
     {
         static void Main(string[] args)
+        {
+            //NetworkConnectivityExamples();
+
+            SecurityEncryptionExamples();
+
+        }
+
+        static private void SecurityEncryptionExamples() { 
+            var securityEncryption = new SecurityEncryption();
+
+            // Validate TLS for a given URL
+            Console.WriteLine("Validating TLS for a given URL...");
+            var tlsValidationResponseA = securityEncryption.ValidateTLS("https://example.com");
+            PrintResponse(tlsValidationResponseA);
+
+            // Validate TLS for a given URL
+            Console.WriteLine("Validating TLS for a given URL known to be expired...");
+            var tlsValidationResponseB = securityEncryption.ValidateTLS("https://mail.svc.zone/");
+            PrintResponse(tlsValidationResponseB);
+
+        }
+
+        static private void NetworkConnectivityExamples()
         {
 
             // Sample use case for ExecuteDnsRequest
@@ -36,9 +60,9 @@ namespace Qoip_Examples
             var dnsLookupResponseNs = networkConnectivity.ExecuteDnsRequest("example.com", queryType: "NS");
             PrintResponse(dnsLookupResponseNs);
 
-            // Perform DNS lookup for an A record with a specific DNS server
+            // Perform DNS lookup for an A record from the authoritative DNS server
             // We use the result from the previous NS lookup to specify the DNS server
-            Console.WriteLine("Performing DNS lookup for an A record with a specific DNS server...");
+            Console.WriteLine("Performing DNS lookup for an A record with a authoritative DNS server...");
             var dnsLookupResponseA = networkConnectivity
                 .WithQueryType("NS")
                 .ExecuteDnsRequest("example.com")
@@ -76,20 +100,6 @@ namespace Qoip_Examples
             Console.WriteLine("Performing DNS lookup for a TLSA record...");
             var dnsLookupResponseTlsa = networkConnectivity.ExecuteDnsRequest("_443._tcp.good-pkixta.dane.huque.com", queryType: "TLSA");
             PrintResponse(dnsLookupResponseTlsa);
-
-
-            //// Sample use case for CheckNetworkAccess
-            //var networkAccessResponse = networkConnectivity.CheckNetworkAccess("192.168.1.1");
-            //PrintResponse(networkAccessResponse);
-
-            //// Sample use case for CheckFirewallRules
-            //var firewallRulesResponse = networkConnectivity.CheckFirewallRules("192.168.1.1");
-            //PrintResponse(firewallRulesResponse);
-
-            //// Sample use case for CheckNetworkSegmentation
-            //var networkSegmentationResponse = networkConnectivity.CheckNetworkSegmentation("192.168.1.1", "192.168.1.2");
-            //PrintResponse(networkSegmentationResponse);
-
         }
 
         static void PrintResponse<T>(Response<T> response)

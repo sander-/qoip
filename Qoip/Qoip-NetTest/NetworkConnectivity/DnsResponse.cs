@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json;
 
-namespace Qoip_NetTest.NetworkConnectivity
+namespace Qoip.ZeroTrustNetwork.NetworkConnectivity
 {
     public class DnsResponse
     {

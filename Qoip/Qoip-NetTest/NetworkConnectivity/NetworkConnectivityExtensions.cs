@@ -1,5 +1,5 @@
 using Qoip.ZeroTrustNetwork.Common;
-using Qoip_NetTest.NetworkConnectivity;
+using Qoip.ZeroTrustNetwork.NetworkConnectivity;
 
 namespace Qoip.ZeroTrustNetwork.NetworkConnectivity
 {
