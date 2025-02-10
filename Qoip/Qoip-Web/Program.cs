@@ -1,3 +1,6 @@
+using Qoip.ZeroTrustNetwork.NetworkConnectivity;
+using Qoip.ZeroTrustNetwork.SecurityEncryption;
+
 namespace Qoip_Web
 {
     public class Program
@@ -5,6 +8,11 @@ namespace Qoip_Web
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+            // Add services to the container.
+            builder.Services.AddControllers();
+            builder.Services.AddScoped<INetworkConnectivity, NetworkConnectivity>();
+            builder.Services.AddScoped<ISecurityEncryption, SecurityEncryption>();
 
             // Add services to the container.
             builder.Services.AddRazorPages();
@@ -27,6 +35,8 @@ namespace Qoip_Web
             app.UseAuthorization();
 
             app.MapRazorPages();
+
+            app.MapControllers();
 
             app.Run();
         }

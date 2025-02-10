@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "target": "ES6",
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "outDir": "wwwroot/js",
+    "allowJs": true
+  },
+  "include": [ "wwwroot/ts/**/*.ts" ]
+}

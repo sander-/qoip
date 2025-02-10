@@ -1,0 +1,26 @@
+﻿@page
+@model Qoip.Web.Pages.NetworkConnectivityModel
+@{
+    ViewData["Title"] = "Network Connectivity";
+}
+
+<section class="container">
+    <h3>Network Connectivity</h3>
+
+    <div id="app">
+        <h1>DNS Request</h1>
+        <form v-on:submit.prevent="performDnsRequest">
+            <label for="domain">Domain Name:</label>
+            <input type="text" id="domain" v-model="domain" required>
+            <button type="submit">Submit</button>
+        </form>
+        <div v-if="dnsResponse">
+            <h2>DNS Response</h2>
+            <pre>{{ dnsResponse }}</pre>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script type="module" src="~/js/networkconnectivity.js"></script>
+}
