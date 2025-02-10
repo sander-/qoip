@@ -14,18 +14,24 @@ namespace Qoip_Examples
 
         }
 
-        static private void SecurityEncryptionExamples() { 
+        static private void SecurityEncryptionExamples()
+        {
             var securityEncryption = new SecurityEncryption();
 
             // Validate TLS for a given URL
             Console.WriteLine("Validating TLS for a given URL...");
-            var tlsValidationResponseA = securityEncryption.ValidateTLS("https://example.com");
+            var tlsValidationResponseA = securityEncryption.ValidateTLS("https://test-ev-rsa.ssl.com/");
             PrintResponse(tlsValidationResponseA);
 
             // Validate TLS for a given URL
             Console.WriteLine("Validating TLS for a given URL known to be expired...");
-            var tlsValidationResponseB = securityEncryption.ValidateTLS("https://mail.svc.zone/");
+            var tlsValidationResponseB = securityEncryption.ValidateTLS("https://expired-rsa-dv.ssl.com/");
             PrintResponse(tlsValidationResponseB);
+
+            // Validate TLS for a revoked certificate
+            Console.WriteLine("Validating TLS for a given URL known to have a revoked certificate...");
+            var tlsValidationResponseC = securityEncryption.ValidateTLS("https://revoked-rsa-dv.ssl.com/");
+            PrintResponse(tlsValidationResponseC);
 
         }
 

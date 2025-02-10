@@ -32,13 +32,42 @@ namespace Qoip.ZeroTrustNetwork.SecurityEncryption
                 httpClientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) =>
                 {
                     certificateDetails = ParseCertificate(cert);
-                    if (sslPolicyErrors == SslPolicyErrors.None)
+
+                    // Set chain policy for revocation check
+                    chain.ChainPolicy.RevocationMode = X509RevocationMode.Online;
+                    chain.ChainPolicy.RevocationFlag = X509RevocationFlag.EntireChain;
+
+                    bool isValid = chain.Build(cert);
+                    if (isValid && sslPolicyErrors == SslPolicyErrors.None)
                     {
-                        return true; // No SSL policy errors
+                        return true; // No SSL policy errors and certificate is valid
                     }
                     else
                     {
-                        errorMessage = $"Certificate validation failed: {sslPolicyErrors}";
+                        foreach (var status in chain.ChainStatus)
+                        {
+                            if (status.Status == X509ChainStatusFlags.Revoked)
+                            {
+                                errorMessage = "Certificate is revoked.";
+                                break;
+                            }
+                            else if (status.Status == X509ChainStatusFlags.NotTimeValid)
+                            {
+                                errorMessage = "Certificate is expired.";
+                                break;
+                            }
+                            else if (status.Status == X509ChainStatusFlags.UntrustedRoot)
+                            {
+                                errorMessage = "Certificate is untrusted.";
+                                break;
+                            }
+                        }
+
+                        if (errorMessage == null)
+                        {
+                            errorMessage = $"Certificate validation failed: {sslPolicyErrors}";
+                        }
+
                         return false;
                     }
                 };
@@ -56,9 +85,17 @@ namespace Qoip.ZeroTrustNetwork.SecurityEncryption
                         return new Response<CertificateValidationResponse>(ResponseStatus.Failure, certificateDetails, errorMessage ?? "Certificate validation failed.");
                     }
                 }
+                catch (HttpRequestException ex)
+                {
+                    return new Response<CertificateValidationResponse>(ResponseStatus.Failure, certificateDetails, errorMessage ?? $"HTTP request error: {ex.Message}");
+                }
+                catch (TaskCanceledException ex)
+                {
+                    return new Response<CertificateValidationResponse>(ResponseStatus.Failure, certificateDetails, errorMessage ?? $"Request timed out: {ex.Message}");
+                }
                 catch (Exception ex)
                 {
-                    return new Response<CertificateValidationResponse>(ResponseStatus.Failure, certificateDetails, ex.Message);
+                    return new Response<CertificateValidationResponse>(ResponseStatus.Failure, certificateDetails, errorMessage ?? $"An error occurred: {ex.Message} {(ex.InnerException != null ? $"Inner exception: {ex.InnerException.Message}" : string.Empty)}");
                 }
             }
         }
@@ -132,6 +169,7 @@ namespace Qoip.ZeroTrustNetwork.SecurityEncryption
                 AlternativeNames = alternativeNames
             };
         }
+
 
         private List<string> ParseSctListExtension(X509Extension extension)
         {
