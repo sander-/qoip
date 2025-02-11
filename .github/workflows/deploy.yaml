@@ -16,6 +16,14 @@ jobs:
     - name: Restore Dependencies
       run: dotnet restore Qoip/Qoip.sln
 
+    - name: Install npm dependencies
+      working-directory: Qoip/Qoip-Web/wwwroot
+      run: npm install
+
+    - name: Build TypeScript
+      working-directory: Qoip/Qoip-Web/wwwroot
+      run: npm run build  
+
     - name: Build Solution
       run: dotnet build Qoip/Qoip.sln --configuration Release --no-restore
 
