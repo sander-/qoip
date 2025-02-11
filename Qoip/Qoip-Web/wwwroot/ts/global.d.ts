@@ -4,6 +4,7 @@
 }
 
 declare module 'https://cdn.jsdelivr.net/npm/axios/dist/esm/axios.min.js' {
-    const axios: typeof import('axios');
+    import Axios from 'axios'; // Ensure @types/axios is installed
+    const axios: Axios;
     export default axios;
 }
