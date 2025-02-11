@@ -28,7 +28,7 @@ jobs:
       run: dotnet build Qoip/Qoip.sln --configuration Release --no-restore
 
     - name: Publish Qoip-Web
-      run: dotnet publish Qoip/Qoip-Web/Qoip-Web.csproj -c Release -o ${{ secrets.DEPLOY_PATH }}   
+      run: dotnet publish Qoip/Qoip-Web/Qoip-Web.csproj -c Release -o "${{ secrets.DEPLOY_PATH }}"
 
     # - name: Restart IIS
     #   run: |
