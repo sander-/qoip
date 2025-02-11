@@ -27,10 +27,15 @@ jobs:
     - name: Build Solution
       run: dotnet build Qoip/Qoip.sln --configuration Release --no-restore
 
+    - name: Take Application Offline
+      run: New-Item -Path "${{ secrets.DEPLOY_PATH }}/app_offline.htm" -ItemType File -Value "The site is temporarily offline for updates."
+      shell: pwsh
+
     - name: Publish Qoip-Web
       run: dotnet publish Qoip/Qoip-Web/Qoip-Web.csproj -c Release -o "${{ secrets.DEPLOY_PATH }}"
 
-    # - name: Restart IIS
-    #   run: |
-    #     Stop-Service -Name W3SVC
-    #     Start-Service -Name W3SVC
+    - name: Bring Application Back Online
+      run: Remove-Item -Path "${{ secrets.DEPLOY_PATH }}/app_offline.htm" -Force
+      shell: pwsh
+
+      
