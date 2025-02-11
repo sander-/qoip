@@ -1,0 +1,33 @@
+name: Deploy to Self-Hosted Windows Server
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: self-hosted  # Use the self-hosted runner
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+
+    - name: Restore Dependencies
+      run: dotnet restore
+
+    - name: Build Application
+      run: dotnet build --configuration Release --no-restore
+
+    - name: Publish Application
+      run: dotnet publish -c Release -o C:\deploy\myapp
+
+    # - name: Restart IIS
+    #   run: |
+    #     Stop-Service -Name W3SVC
+    #     Start-Service -Name W3SVC
