@@ -25,7 +25,7 @@ jobs:
       run: dotnet build --configuration Release --no-restore
 
     - name: Publish Application
-      run: dotnet publish -c Release -o C:\deploy\myapp
+      run: dotnet publish -c Release -o ${{ secrets.DEPLOY_PATH }}
 
     # - name: Restart IIS
     #   run: |
