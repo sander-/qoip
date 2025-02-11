@@ -14,13 +14,13 @@ jobs:
       uses: actions/checkout@v4    
 
     - name: Restore Dependencies
-      run: dotnet restore
+      run: dotnet restore Qoip/Qoip.sln
 
-    - name: Build Application
-      run: dotnet build --configuration Release --no-restore
+    - name: Build Solution
+      run: dotnet build Qoip/Qoip.sln --configuration Release --no-restore
 
-    - name: Publish Application
-      run: dotnet publish -c Release -o ${{ secrets.DEPLOY_PATH }}
+    - name: Publish Qoip-Web
+      run: dotnet publish Qoip/Qoip-Web/Qoip-Web.csproj -c Release -o ${{ secrets.DEPLOY_PATH }}   
 
     # - name: Restart IIS
     #   run: |
