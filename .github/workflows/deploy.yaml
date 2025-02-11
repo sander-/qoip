@@ -29,13 +29,13 @@ jobs:
 
     - name: Take Application Offline
       run: New-Item -Path "${{ secrets.DEPLOY_PATH }}/app_offline.htm" -ItemType File -Value "The site is temporarily offline for updates."
-      shell: pwsh
+      shell: powershell
 
     - name: Publish Qoip-Web
       run: dotnet publish Qoip/Qoip-Web/Qoip-Web.csproj -c Release -o "${{ secrets.DEPLOY_PATH }}"
 
     - name: Bring Application Back Online
       run: Remove-Item -Path "${{ secrets.DEPLOY_PATH }}/app_offline.htm" -Force
-      shell: pwsh
+      shell: powershell
 
       
