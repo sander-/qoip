@@ -12,29 +12,31 @@ import axios from 'https://cdn.jsdelivr.net/npm/axios/dist/esm/axios.min.js';
 const app = createApp(defineComponent({
     data() {
         return {
-            domain: '',
-            dnsResponse: null,
+            url: '',
+            expirationWarningThresholdInDays: 0,
+            validationResponse: null,
             loading: false,
             error: null
         };
     },
     methods: {
-        performDnsRequest() {
+        performCertificateValidation() {
             return __awaiter(this, void 0, void 0, function* () {
                 this.loading = true;
                 this.error = null;
-                this.dnsResponse = null;
+                this.validationResponse = null;
                 try {
-                    const response = yield axios.get(`/api/NetworkConnectivity/dns`, {
+                    const response = yield axios.get(`/api/securityencryption/certificate`, {
                         params: {
-                            domain: this.domain
+                            url: this.url,
+                            expirationWarningThresholdInDays: this.expirationWarningThresholdInDays
                         }
                     });
-                    this.dnsResponse = response.data;
+                    this.validationResponse = response.data;
                 }
                 catch (error) {
-                    console.error('Error performing DNS request:', error);
-                    this.error = 'Error performing DNS request. Please try again.';
+                    console.error('Error performing certificate validation:', error);
+                    this.error = 'Error performing certificate validation. Please try again.';
                 }
                 finally {
                     this.loading = false;
@@ -42,8 +44,9 @@ const app = createApp(defineComponent({
             });
         },
         clearForm() {
-            this.domain = '';
-            this.dnsResponse = null;
+            this.url = '';
+            this.expirationWarningThresholdInDays = 0;
+            this.validationResponse = null;
             this.error = null;
         }
     }

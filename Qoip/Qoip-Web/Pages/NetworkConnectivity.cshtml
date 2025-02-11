@@ -4,19 +4,33 @@
     ViewData["Title"] = "Network Connectivity";
 }
 
-<section class="container">
-    <h3>Network Connectivity</h3>
+<section class="container mt-5">
+    <h3 class="mb-4">Network Connectivity</h3>
 
     <div id="app">
-        <h1>DNS Request</h1>
-        <form v-on:submit.prevent="performDnsRequest">
-            <label for="domain">Domain Name:</label>
-            <input type="text" id="domain" v-model="domain" required>
-            <button type="submit">Submit</button>
+        <h1 class="h4 mb-3">DNS Request</h1>
+        <form v-on:submit.prevent="performDnsRequest" class="needs-validation" novalidate>
+            <div class="mb-3">
+                <label for="domain" class="form-label">Domain Name:</label>
+                <input type="text" id="domain" v-model="domain" class="form-control" required>
+                <div class="invalid-feedback">
+                    Please enter a domain name.
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary" :disabled="loading">Submit</button>
+            <button type="button" class="btn btn-secondary ms-2" v-on:click ="clearForm">Clear</button>
         </form>
-        <div v-if="dnsResponse">
-            <h2>DNS Response</h2>
-            <pre>{{ dnsResponse }}</pre>
+        <div v-if="loading" class="mt-3">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+        <div v-if="dnsResponse" class="mt-4">
+            <h2 class="h5">DNS Response</h2>
+            <pre class="bg-dark p-3 border rounded">{{ dnsResponse }}</pre>
+        </div>
+        <div v-if="error" class="mt-4 alert alert-danger">
+            {{ error }}
         </div>
     </div>
 </section>

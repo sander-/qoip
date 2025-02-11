@@ -1,0 +1,47 @@
+﻿@page
+@model Qoip.Web.Pages.SecurityEncryptionModel
+@{
+    ViewData["Title"] = "Security Encryption";
+}
+
+<section class="container mt-5">
+    <h3 class="mb-4">Security Encryption</h3>
+
+    <div id="app">
+        <h1 class="h4 mb-3">Certificate Validation</h1>
+        <form v-on:submit.prevent="performCertificateValidation" class="needs-validation" novalidate>
+            <div class="mb-3">
+                <label for="url" class="form-label">URL:</label>
+                <input type="text" id="url" v-model="url" class="form-control" required>
+                <div class="invalid-feedback">
+                    Please enter a URL.
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="expirationWarningThresholdInDays" class="form-label">Expiration Warning Threshold (Days):</label>
+                <input type="number" id="expirationWarningThresholdInDays" v-model="expirationWarningThresholdInDays" class="form-control" required>
+                <div class="invalid-feedback">
+                    Please enter a valid number of days.
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary" :disabled="loading">Validate</button>
+            <button type="button" class="btn btn-secondary ms-2" v-on:click="clearForm">Clear</button>
+        </form>
+        <div v-if="loading" class="mt-3">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+        <div v-if="validationResponse" class="mt-4">
+            <h2 class="h5">Validation Response</h2>
+            <pre class="bg-dark p-3 border rounded">{{ validationResponse }}</pre>
+        </div>
+        <div v-if="error" class="mt-4 alert alert-danger">
+            {{ error }}
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script type="module" src="~/js/securityencryption.js"></script>
+}

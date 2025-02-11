@@ -46,6 +46,7 @@ namespace Qoip.ZeroTrustNetwork.SecurityEncryption
                         if (ExpirationWarningThresholdInDays > 0 && cert.NotAfter <= DateTime.Now.AddDays(ExpirationWarningThresholdInDays))
                         {
                             responseStatus = ResponseStatus.Warning;
+                            errorMessage = $"Certificate is expiring on {cert.NotAfter:yyyy-MM-dd}. It is within the threshold of {ExpirationWarningThresholdInDays} days.";
                         }
                         return true; // No SSL policy errors and certificate is valid
                     }
@@ -87,9 +88,13 @@ namespace Qoip.ZeroTrustNetwork.SecurityEncryption
                     if (response.IsSuccessStatusCode && certificateDetails != null)
                     {
                         string message = responseStatus == ResponseStatus.Warning
-                            ? $"Certificate is expiring on {certificateDetails.ValidTo:yyyy-MM-dd}. It is within the threshold of {ExpirationWarningThresholdInDays} days."
-                            : "Certificate is valid.";
+                            ? errorMessage
+                            : "No SSL policy errors and certificate is valid.";
                         return new Response<CertificateValidationResponse>(responseStatus, certificateDetails, message);
+                    }
+                    else if (certificateDetails != null)
+                    {
+                        return new Response<CertificateValidationResponse>(responseStatus, certificateDetails, responseStatus == ResponseStatus.Warning ? errorMessage : "No SSL policy errors and certificate is valid.");
                     }
                     else
                     {
@@ -110,6 +115,7 @@ namespace Qoip.ZeroTrustNetwork.SecurityEncryption
                 }
             }
         }
+
 
         private CertificateValidationResponse ParseCertificate(X509Certificate2 cert)
         {

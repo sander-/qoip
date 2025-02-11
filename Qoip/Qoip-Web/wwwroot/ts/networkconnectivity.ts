@@ -3,8 +3,6 @@ import axios from 'https://cdn.jsdelivr.net/npm/axios/dist/esm/axios.min.js';
 import { AxiosResponse } from 'axios';
 
 interface DnsResponse {
-    // Define the structure of the DNS response here
-    // Example:
     status: string;
     data: any;
 }
@@ -14,11 +12,16 @@ const app = createApp(
         data() {
             return {
                 domain: '',
-                dnsResponse: null as DnsResponse | null
+                dnsResponse: null as DnsResponse | null,
+                loading: false,
+                error: null as string | null
             };
         },
         methods: {
             async performDnsRequest() {
+                this.loading = true;
+                this.error = null;
+                this.dnsResponse = null;
                 try {
                     const response: AxiosResponse<DnsResponse> = await axios.get(`/api/NetworkConnectivity/dns`, {
                         params: {
@@ -28,8 +31,15 @@ const app = createApp(
                     this.dnsResponse = response.data;
                 } catch (error) {
                     console.error('Error performing DNS request:', error);
-                    this.dnsResponse = { status: 'error', data: 'Error performing DNS request. Please try again.' };
+                    this.error = 'Error performing DNS request. Please try again.';
+                } finally {
+                    this.loading = false;
                 }
+            },
+            clearForm() {
+                this.domain = '';
+                this.dnsResponse = null;
+                this.error = null;
             }
         }
     })
