@@ -48,6 +48,12 @@ namespace Qoip.Web.Api
             }
 
             var traceRouteResponse = _networkConnectivity.ExecuteTraceRouteRequest(ipAddress, maxHops, timeout, resolveDns);
+            // in the response, obfuscate the first result  
+            if (traceRouteResponse.Status == Qoip.ZeroTrustNetwork.Common.ResponseStatus.Ok)
+            {
+                traceRouteResponse.Data.TraceResults[0].IpAddress = "xxx.xxx.xxx.xxx";
+                traceRouteResponse.Data.TraceResults[0].Hostname = "***";
+            }
             return Ok(traceRouteResponse);
         }
 
