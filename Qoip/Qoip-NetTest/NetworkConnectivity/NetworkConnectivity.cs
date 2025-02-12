@@ -13,6 +13,8 @@ namespace Qoip.ZeroTrustNetwork.NetworkConnectivity
         public string DnsServer { get; set; }
         public string QueryType { get; set; } = "A";
         public int Timeout { get; set; } = 5000;
+        public int MaxHops { get; set; } = 30;
+        public bool ResolveDns { get; set; } = false;
         public DetailLevel DetailLevel { get; set; } = DetailLevel.Ok;
 
 
@@ -34,7 +36,18 @@ namespace Qoip.ZeroTrustNetwork.NetworkConnectivity
             return new Response<bool>(ResponseStatus.Ok, true, "Network segmentation check passed.");
         }
 
-        public Response<DnsResponse> ExecuteDnsRequest(string domainName, string? dnsServer = null, int timeout = 5000, DetailLevel detailLevel = DetailLevel.Ok, string queryType = "A")
+        public Response<TraceRouteResponse> ExecuteTraceRouteRequest(string ipAddress, int maxHops = 30, int timeout = 2000, bool resolveDns = false, DetailLevel detailLevel = DetailLevel.Info)
+        {
+            var traceRouteRequest = new TraceRouteRequest(ipAddress, maxHops, timeout, resolveDns, detailLevel);
+            return traceRouteRequest.Execute();
+        }
+
+        public Response<TraceRouteResponse> ExecuteTraceRouteRequest(string ipAddress)
+        {
+            return ExecuteTraceRouteRequest(ipAddress, MaxHops, Timeout, ResolveDns, DetailLevel);
+        }
+
+        public Response<DnsResponse> ExecuteDnsRequest(string domainName, string? dnsServer = null, int timeout = 2000, DetailLevel detailLevel = DetailLevel.Ok, string queryType = "A")
         {
             dnsServer ??= GetSystemDefaultDnsServer();
 

@@ -18,7 +18,7 @@
                 </div>
             </div>
             <button type="submit" class="btn btn-primary" :disabled="loading">Submit</button>
-            <button type="button" class="btn btn-secondary ms-2" v-on:click ="clearForm">Clear</button>
+            <button type="button" class="btn btn-secondary ms-2" v-on:click="clearForm">Clear</button>
         </form>
         <div v-if="loading" class="mt-3">
             <div class="spinner-border" role="status">
@@ -32,9 +32,53 @@
         <div v-if="error" class="mt-4 alert alert-danger">
             {{ error }}
         </div>
+
+        <h1 class="h4 mb-3 mt-5">Traceroute Request</h1>
+        <form v-on:submit.prevent="performTracerouteRequest" class="needs-validation" novalidate>
+            <div class="mb-3">
+                <label for="target" class="form-label">Target Address:</label>
+                <input type="text" id="target" v-model="target" class="form-control" required>
+                <div class="invalid-feedback">
+                    Please enter a target address.
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="maxHops" class="form-label">Max Hops:</label>
+                <input type="number" id="maxHops" v-model="maxHops" class="form-control" required>
+                <div class="invalid-feedback">
+                    Please enter the maximum number of hops.
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="timeout" class="form-label">Timeout (ms):</label>
+                <input type="number" id="timeout" v-model="timeout" class="form-control" required>
+                <div class="invalid-feedback">
+                    Please enter the timeout in milliseconds.
+                </div>
+            </div>
+            <div class="mb-3 form-check">
+                <input type="checkbox" id="resolveDns" v-model="resolveDns" class="form-check-input">
+                <label for="resolveDns" class="form-check-label">Resolve DNS</label>
+            </div>
+            <button type="submit" class="btn btn-primary" :disabled="loadingTraceroute">Submit</button>
+            <button type="button" class="btn btn-secondary ms-2" v-on:click="clearTracerouteForm">Clear</button>
+        </form>
+        <div v-if="loadingTraceroute" class="mt-3">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+        <div v-if="tracerouteResponse" class="mt-4">
+            <h2 class="h5">Traceroute Response</h2>
+            <pre class="bg-dark p-3 border rounded">{{ tracerouteResponse }}</pre>
+        </div>
+        <div v-if="tracerouteError" class="mt-4 alert alert-danger">
+            {{ tracerouteError }}
+        </div>
     </div>
 </section>
 
 @section Scripts {
     <script type="module" src="~/js/networkconnectivity.js"></script>
 }
+

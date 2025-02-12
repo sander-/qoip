@@ -8,10 +8,34 @@ namespace Qoip_Examples
     {
         static void Main(string[] args)
         {
-            //NetworkConnectivityExamples();
+            NetworkConnectivityTraceRouteExamples();
 
-            SecurityEncryptionExamples();
+            //NetworkConnectivityDNSExamples();
 
+            //SecurityEncryptionExamples();
+
+        }
+
+        static private void NetworkConnectivityTraceRouteExamples()
+        {
+
+            var networkConnectivity = new NetworkConnectivity();
+
+            //Console.WriteLine("Performing Traceroute");
+            //var traceRouteResponseA = networkConnectivity.ExecuteTraceRoute("1.1.1.1");
+            //PrintResponse(traceRouteResponseA);
+
+            Console.WriteLine("Performing Traceroute with DNS resolution");
+            var dnsRequest = networkConnectivity.ExecuteDnsRequest("example.com");
+            var traceRouteResponseB = networkConnectivity.ExecuteTraceRouteRequest(dnsRequest.Data.FirstRecord, resolveDns: true);
+            PrintResponse(traceRouteResponseB);
+
+            Console.WriteLine("Performing Traceroute with DNS resolution using a Fluent API");
+            var traceRouteResponseC = networkConnectivity
+                .ExecuteDnsRequest("example.com")
+                .Then(result => networkConnectivity
+                    .ExecuteTraceRouteRequest(result.FirstRecord, resolveDns: true));
+            PrintResponse(traceRouteResponseC);
         }
 
         static private void SecurityEncryptionExamples()
@@ -41,13 +65,13 @@ namespace Qoip_Examples
             Console.WriteLine($"Expiration date: {expirationDateFluent}");
 
             // Validate TLS for a certificate that is expiring in n number of days
-            Console.WriteLine("Validating TLS for a given URL known to have a certificate that is expiring in n days...");            
+            Console.WriteLine("Validating TLS for a given URL known to have a certificate that is expiring in n days...");
             var daysUntilExpiration = (expirationDateFluent - DateTime.Now).Days + 2;
             var tlsValidationResponseD = securityEncryption.ValidateCertificate("https://test-ev-rsa.ssl.com/", daysUntilExpiration);
             PrintResponse(tlsValidationResponseD);
         }
 
-        static private void NetworkConnectivityExamples()
+        static private void NetworkConnectivityDNSExamples()
         {
 
             // Sample use case for ExecuteDnsRequest
