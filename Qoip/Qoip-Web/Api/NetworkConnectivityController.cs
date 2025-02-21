@@ -74,8 +74,20 @@ namespace Qoip.Web.Api
             // If X-Forwarded-For header is filled, use the first IP address as the actual client IP address
             if (validProxyAddresses.Any())
             {
-                clientIpAddress = validProxyAddresses.First();
                 proxyAddresses = new List<string> { clientIpAddress };
+                clientIpAddress = validProxyAddresses.First();
+            }
+
+            // If X-Real-IP header is filled, use it as the actual client IP address
+            if (!string.IsNullOrEmpty(realIpAddress) && System.Net.IPAddress.TryParse(realIpAddress, out _))
+            {
+                proxyAddresses = new List<string> { clientIpAddress };
+                clientIpAddress = realIpAddress;
+            }
+
+            if (!string.IsNullOrEmpty(ipv4Address) && ipv4Address.Equals(clientIpAddress))
+            {
+                ipv4Address = null;
             }
 
             var clientIpCanonical = GetCanonicalName(clientIpAddress);
