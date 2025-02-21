@@ -76,7 +76,7 @@ namespace Qoip.ZeroTrustNetwork.NetworkConnectivity
         private async Task<string> QueryWhoisServerAsync(string whoisServer, string query)
         {
             // include n in query to get more detailed information
-            query = $"n {query}";
+            query = $"{query}";
 
             using (var tcpClient = new TcpClient())
             {
