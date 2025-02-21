@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Qoip.ZeroTrustNetwork.NetworkConnectivity;
 using Qoip.ZeroTrustNetwork.SecurityEncryption;
+using System.Net.Sockets;
+using System.Net;
 
 namespace Qoip.Web.Api
 {
@@ -58,7 +60,7 @@ namespace Qoip.Web.Api
         }
 
         [HttpGet("client-ip")]
-        public IActionResult GetClientIpAddress()
+        public async Task<IActionResult> GetClientIpAddress()
         {
             var clientIpAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
             var xForwardedForHeader = HttpContext.Request.Headers["X-Forwarded-For"].ToString();
@@ -69,11 +71,30 @@ namespace Qoip.Web.Api
             var ipv4Address = validProxyAddresses.FirstOrDefault(ip => System.Net.IPAddress.TryParse(ip, out var parsedIp) && parsedIp.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork);
             var ipv6Address = validProxyAddresses.FirstOrDefault(ip => System.Net.IPAddress.TryParse(ip, out var parsedIp) && parsedIp.AddressFamily == System.Net.Sockets.AddressFamily.InterNetworkV6);
 
+            if (ipv4Address == clientIpAddress)
+            {
+                validProxyAddresses.Clear();
+            }
+
+            var clientIpWhois = await GetWhoisInfo(clientIpAddress);
+            var ipv4Whois = await GetWhoisInfo(ipv4Address);
+            var ipv6Whois = await GetWhoisInfo(ipv6Address);
+
+            var clientIpCanonical = await GetCanonicalName(clientIpAddress);
+            var ipv4Canonical = await GetCanonicalName(ipv4Address);
+            var ipv6Canonical = await GetCanonicalName(ipv6Address);
+
             var result = new
             {
                 ClientIpAddress = clientIpAddress,
+                ClientIpWhois = clientIpWhois,
+                ClientIpCanonical = clientIpCanonical,
                 IPv4Address = ipv4Address,
+                IPv4Whois = ipv4Whois,
+                IPv4Canonical = ipv4Canonical,
                 IPv6Address = ipv6Address,
+                IPv6Whois = ipv6Whois,
+                IPv6Canonical = ipv6Canonical,
                 ProxyAddresses = validProxyAddresses,
                 RealIpAddress = realIpAddress
             };
@@ -81,5 +102,34 @@ namespace Qoip.Web.Api
             return Ok(result);
         }
 
+        private async Task<string> GetWhoisInfo(string ipAddress)
+        {
+            if (string.IsNullOrEmpty(ipAddress))
+            {
+                return null;
+            }
+
+            var whoisRequest = new WhoisRequest(ipAddress);
+            var whoisResponse = await whoisRequest.ExecuteAsync();
+            return whoisResponse.Data?.WhoisData;
+        }
+
+        private async Task<string> GetCanonicalName(string ipAddress)
+        {
+            if (string.IsNullOrEmpty(ipAddress))
+            {
+                return null;
+            }
+
+            try
+            {
+                var hostEntry = await Dns.GetHostEntryAsync(ipAddress);
+                return hostEntry.HostName;
+            }
+            catch (SocketException)
+            {
+                return null;
+            }
+        }
     }
 }

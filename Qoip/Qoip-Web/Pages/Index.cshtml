@@ -46,20 +46,43 @@
                 <div v-else-if="error">{{ error }}</div>
                 <div v-else>
                     <h3>This is you</h3>
-                    <div class="feature-card">
-                    <table class="table table-sm" style="table-layout: fixed; width: 100%;">
+                    <table class="table table-sm table-bordered" style="table-layout: fixed; width: 100%;">
                         <tbody>
                             <tr v-if="clientIpInfo?.clientIpAddress">
                                 <th style="width: 30%;">Client IP</th>
                                 <td style="word-wrap: break-word;">{{ clientIpInfo.clientIpAddress }}</td>
                             </tr>
+                            <tr v-if="clientIpInfo?.clientIpWhois">
+                                <th style="width: 30%;">Client IP WHOIS</th>
+                                <td style="word-wrap: break-word;">{{ clientIpInfo.clientIpWhois }}</td>
+                            </tr>
+                            <tr v-if="clientIpInfo?.clientIpCanonical">
+                                <th style="width: 30%;">Client IP Canonical</th>
+                                <td style="word-wrap: break-word;">{{ clientIpInfo.clientIpCanonical }}</td>
+                            </tr>
                             <tr v-if="clientIpInfo?.iPv4Address">
                                 <th style="width: 30%;">IPv4</th>
                                 <td style="word-wrap: break-word;">{{ clientIpInfo.iPv4Address }}</td>
                             </tr>
+                            <tr v-if="clientIpInfo?.iPv4Whois">
+                                <th style="width: 30%;">IPv4 WHOIS</th>
+                                <td style="word-wrap: break-word;">{{ clientIpInfo.iPv4Whois }}</td>
+                            </tr>
+                            <tr v-if="clientIpInfo?.iPv4Canonical">
+                                <th style="width: 30%;">IPv4 Canonical</th>
+                                <td style="word-wrap: break-word;">{{ clientIpInfo.iPv4Canonical }}</td>
+                            </tr>
                             <tr v-if="clientIpInfo?.iPv6Address">
                                 <th style="width: 30%;">IPv6</th>
                                 <td style="word-wrap: break-word;">{{ clientIpInfo.iPv6Address }}</td>
+                            </tr>
+                            <tr v-if="clientIpInfo?.iPv6Whois">
+                                <th style="width: 30%;">IPv6 WHOIS</th>
+                                <td style="word-wrap: break-word;">{{ clientIpInfo.iPv6Whois }}</td>
+                            </tr>
+                            <tr v-if="clientIpInfo?.iPv6Canonical">
+                                <th style="width: 30%;">IPv6 Canonical</th>
+                                <td style="word-wrap: break-word;">{{ clientIpInfo.iPv6Canonical }}</td>
                             </tr>
                             <tr v-if="clientIpInfo?.proxyAddresses.length">
                                 <th style="width: 30%;">Proxies</th>
@@ -82,8 +105,7 @@
                                 <td style="word-wrap: break-word;">{{ languageInfo }}</td>
                             </tr>
                         </tbody>
-                        </table>
-                    </div>
+                    </table>
                 </div>
             </div>
         </div>

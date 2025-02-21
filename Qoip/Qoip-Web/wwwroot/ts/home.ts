@@ -4,8 +4,14 @@ import { AxiosResponse } from 'axios';
 
 interface ClientIpResponse {
     clientIpAddress: string;
+    clientIpWhois: string | null;
+    clientIpCanonical: string | null;
     iPv4Address: string | null;
+    iPv4Whois: string | null;
+    iPv4Canonical: string | null;
     iPv6Address: string | null;
+    iPv6Whois: string | null;
+    iPv6Canonical: string | null;
     proxyAddresses: string[];
     realIpAddress: string;
 }
