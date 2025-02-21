@@ -4,16 +4,17 @@ import { AxiosResponse } from 'axios';
 
 interface ClientIpResponse {
     clientIpAddress: string;
-    clientIpWhois: string | null;
     clientIpCanonical: string | null;
     iPv4Address: string | null;
-    iPv4Whois: string | null;
     iPv4Canonical: string | null;
     iPv6Address: string | null;
-    iPv6Whois: string | null;
     iPv6Canonical: string | null;
     proxyAddresses: string[];
     realIpAddress: string;
+}
+
+interface WhoisResponse {
+    whoisData: string;
 }
 
 const app = createApp(
@@ -21,11 +22,14 @@ const app = createApp(
         data() {
             return {
                 clientIpInfo: null as ClientIpResponse | null,
+                whoisInfo: {} as Record<string, WhoisResponse | null>,
                 browserAgentInfo: navigator.userAgent,
                 platformInfo: navigator.platform,
                 languageInfo: navigator.language,
                 loading: false,
-                error: null as string | null
+                whoisLoading: {} as Record<string, boolean>,
+                error: null as string | null,
+                whoisError: {} as Record<string, string | null>
             };
         },
         methods: {
@@ -42,10 +46,22 @@ const app = createApp(
                 } finally {
                     this.loading = false;
                 }
+            },
+            async fetchWhoisInfo(ipAddress: string) {
+                this.whoisLoading[ipAddress] = true;
+                this.whoisError[ipAddress] = null;
+                this.whoisInfo[ipAddress] = null;
+                try {
+                    const response: AxiosResponse<WhoisResponse> = await axios.get(`/api/networkconnectivity/whois?ipAddress=${ipAddress}`);
+                    this.whoisInfo[ipAddress] = response.data;
+                    console.log(response);
+                } catch (error) {
+                    console.error(`Error fetching WHOIS information for ${ipAddress}:`, error);
+                    this.whoisError[ipAddress] = 'Failed to load WHOIS information.';
+                } finally {
+                    this.whoisLoading[ipAddress] = false;
+                }
             }
-        },
-        mounted() {
-            this.fetchClientIpInfo();
         }
     })
 );

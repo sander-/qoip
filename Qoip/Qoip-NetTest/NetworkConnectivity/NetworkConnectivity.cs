@@ -42,6 +42,11 @@ namespace Qoip.ZeroTrustNetwork.NetworkConnectivity
             return portScanRequest.Execute();
         }
 
+        public Response<WhoisResponse> ExecuteWhoisRequest(string ipAddress)
+        {
+            var whoisRequest = new WhoisRequest(ipAddress);
+            return whoisRequest.Execute();
+        }
 
         public Response<TraceRouteResponse> ExecuteTraceRouteRequest(string ipAddress, int maxHops = 30, int timeout = 2000, bool resolveDns = false, DetailLevel detailLevel = DetailLevel.Info)
         {

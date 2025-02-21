@@ -13,11 +13,14 @@ const app = createApp(defineComponent({
     data() {
         return {
             clientIpInfo: null,
+            whoisInfo: {},
             browserAgentInfo: navigator.userAgent,
             platformInfo: navigator.platform,
             languageInfo: navigator.language,
             loading: false,
-            error: null
+            whoisLoading: {},
+            error: null,
+            whoisError: {}
         };
     },
     methods: {
@@ -38,10 +41,25 @@ const app = createApp(defineComponent({
                     this.loading = false;
                 }
             });
+        },
+        fetchWhoisInfo(ipAddress) {
+            return __awaiter(this, void 0, void 0, function* () {
+                this.whoisLoading[ipAddress] = true;
+                this.whoisError[ipAddress] = null;
+                this.whoisInfo[ipAddress] = null;
+                try {
+                    const response = yield axios.get(`/api/networkconnectivity/whois?ipAddress=${ipAddress}`);
+                    this.whoisInfo[ipAddress] = response.data;
+                }
+                catch (error) {
+                    console.error(`Error fetching WHOIS information for ${ipAddress}:`, error);
+                    this.whoisError[ipAddress] = 'Failed to load WHOIS information.';
+                }
+                finally {
+                    this.whoisLoading[ipAddress] = false;
+                }
+            });
         }
-    },
-    mounted() {
-        this.fetchClientIpInfo();
     }
 }));
 app.mount('#this-is-you-app');

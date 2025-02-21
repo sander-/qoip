@@ -60,7 +60,7 @@ namespace Qoip.Web.Api
         }
 
         [HttpGet("client-ip")]
-        public async Task<IActionResult> GetClientIpAddress()
+        public IActionResult GetClientIpAddress()
         {
             var clientIpAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
             var xForwardedForHeader = HttpContext.Request.Headers["X-Forwarded-For"].ToString();
@@ -76,24 +76,17 @@ namespace Qoip.Web.Api
                 validProxyAddresses.Clear();
             }
 
-            var clientIpWhois = await GetWhoisInfo(clientIpAddress);
-            var ipv4Whois = await GetWhoisInfo(ipv4Address);
-            var ipv6Whois = await GetWhoisInfo(ipv6Address);
-
-            var clientIpCanonical = await GetCanonicalName(clientIpAddress);
-            var ipv4Canonical = await GetCanonicalName(ipv4Address);
-            var ipv6Canonical = await GetCanonicalName(ipv6Address);
+            var clientIpCanonical = GetCanonicalName(clientIpAddress);
+            var ipv4Canonical = GetCanonicalName(ipv4Address);
+            var ipv6Canonical = GetCanonicalName(ipv6Address);
 
             var result = new
             {
                 ClientIpAddress = clientIpAddress,
-                ClientIpWhois = clientIpWhois,
                 ClientIpCanonical = clientIpCanonical,
                 IPv4Address = ipv4Address,
-                IPv4Whois = ipv4Whois,
                 IPv4Canonical = ipv4Canonical,
                 IPv6Address = ipv6Address,
-                IPv6Whois = ipv6Whois,
                 IPv6Canonical = ipv6Canonical,
                 ProxyAddresses = validProxyAddresses,
                 RealIpAddress = realIpAddress
@@ -102,19 +95,20 @@ namespace Qoip.Web.Api
             return Ok(result);
         }
 
-        private async Task<string> GetWhoisInfo(string ipAddress)
+        [HttpGet("whois")]
+        public async Task<IActionResult> GetWhoisInfo(string ipAddress)
         {
             if (string.IsNullOrEmpty(ipAddress))
             {
-                return null;
+                return BadRequest("IP address is required.");
             }
 
             var whoisRequest = new WhoisRequest(ipAddress);
             var whoisResponse = await whoisRequest.ExecuteAsync();
-            return whoisResponse.Data?.WhoisData;
+            return Ok(whoisResponse.Data);
         }
 
-        private async Task<string> GetCanonicalName(string ipAddress)
+        private string GetCanonicalName(string ipAddress)
         {
             if (string.IsNullOrEmpty(ipAddress))
             {
@@ -123,7 +117,7 @@ namespace Qoip.Web.Api
 
             try
             {
-                var hostEntry = await Dns.GetHostEntryAsync(ipAddress);
+                var hostEntry = Dns.GetHostEntry(ipAddress);
                 return hostEntry.HostName;
             }
             catch (SocketException)

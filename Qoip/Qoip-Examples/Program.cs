@@ -14,9 +14,31 @@ namespace Qoip_Examples
 
             //SecurityEncryptionExamples();
 
-            NetworkConnectivityPortScanExamples();
+            // NetworkConnectivityPortScanExamples();
+
+            NetworkConnectivityWhoisExamples();
 
         }
+
+        static void NetworkConnectivityWhoisExamples()
+        {
+            var networkConnectivity = new NetworkConnectivity();
+            // Perform a WHOIS lookup on a given IP address
+            Console.WriteLine("Performing a WHOIS lookup on a given IP address...");
+            var whoisResponseA = networkConnectivity.ExecuteWhoisRequest("1.1.1.1");
+            PrintResponse(whoisResponseA);
+
+            // Perform a WHOIS lookup on another given IP address
+            Console.WriteLine("Performing a WHOIS lookup on a given IP address...");
+            var whoisResponseB = networkConnectivity.ExecuteWhoisRequest("141.101.76.68");
+            PrintResponse(whoisResponseB);
+
+            // Perform a WHOIS lookup on another given IP address
+            Console.WriteLine("Performing a WHOIS lookup on a given IP address...");
+            var whoisResponseC = networkConnectivity.ExecuteWhoisRequest("77.174.234.233");
+            PrintResponse(whoisResponseC);
+        }
+
 
         static private void NetworkConnectivityPortScanExamples()
         {
