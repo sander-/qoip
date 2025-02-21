@@ -57,5 +57,29 @@ namespace Qoip.Web.Api
             return Ok(traceRouteResponse);
         }
 
+        [HttpGet("client-ip")]
+        public IActionResult GetClientIpAddress()
+        {
+            var clientIpAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
+            var xForwardedForHeader = HttpContext.Request.Headers["X-Forwarded-For"].ToString();
+            var proxyAddresses = xForwardedForHeader.Split(',').Select(ip => ip.Trim()).ToList();
+            var realIpAddress = HttpContext.Request.Headers["X-Real-IP"].ToString();
+
+            var validProxyAddresses = proxyAddresses.Where(ip => System.Net.IPAddress.TryParse(ip, out _)).ToList();
+            var ipv4Address = validProxyAddresses.FirstOrDefault(ip => System.Net.IPAddress.TryParse(ip, out var parsedIp) && parsedIp.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork);
+            var ipv6Address = validProxyAddresses.FirstOrDefault(ip => System.Net.IPAddress.TryParse(ip, out var parsedIp) && parsedIp.AddressFamily == System.Net.Sockets.AddressFamily.InterNetworkV6);
+
+            var result = new
+            {
+                ClientIpAddress = clientIpAddress,
+                IPv4Address = ipv4Address,
+                IPv6Address = ipv6Address,
+                ProxyAddresses = validProxyAddresses,
+                RealIpAddress = realIpAddress
+            };
+
+            return Ok(result);
+        }
+
     }
 }

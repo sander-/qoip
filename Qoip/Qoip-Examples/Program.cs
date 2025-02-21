@@ -8,11 +8,23 @@ namespace Qoip_Examples
     {
         static void Main(string[] args)
         {
-            NetworkConnectivityTraceRouteExamples();
+            //NetworkConnectivityTraceRouteExamples();
 
             //NetworkConnectivityDNSExamples();
 
             //SecurityEncryptionExamples();
+
+            NetworkConnectivityPortScanExamples();
+
+        }
+
+        static private void NetworkConnectivityPortScanExamples()
+        {
+            var networkConnectivity = new NetworkConnectivity();
+            // Perform a port scan on a given IP address
+            Console.WriteLine("Performing a port scan on a given IP address...");
+            var portScanResponseA = networkConnectivity.ExecutePortScanRequest("mail.solvec.nl", "all");
+            PrintResponse(portScanResponseA);
 
         }
 

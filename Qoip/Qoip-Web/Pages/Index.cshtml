@@ -37,6 +37,58 @@
     </div>
 </section>
 
+<!-- This is you Section -->
+<section class="this-is-you container">
+    <div class="row text-center">
+        <div class="col-md-12">
+            <div id="this-is-you-app">
+                <div v-if="loading">Loading...</div>
+                <div v-else-if="error">{{ error }}</div>
+                <div v-else>
+                    <h3>This is you</h3>
+                    <div class="feature-card">
+                    <table class="table table-sm" style="table-layout: fixed; width: 100%;">
+                        <tbody>
+                            <tr v-if="clientIpInfo?.clientIpAddress">
+                                <th style="width: 30%;">Client IP</th>
+                                <td style="word-wrap: break-word;">{{ clientIpInfo.clientIpAddress }}</td>
+                            </tr>
+                            <tr v-if="clientIpInfo?.iPv4Address">
+                                <th style="width: 30%;">IPv4</th>
+                                <td style="word-wrap: break-word;">{{ clientIpInfo.iPv4Address }}</td>
+                            </tr>
+                            <tr v-if="clientIpInfo?.iPv6Address">
+                                <th style="width: 30%;">IPv6</th>
+                                <td style="word-wrap: break-word;">{{ clientIpInfo.iPv6Address }}</td>
+                            </tr>
+                            <tr v-if="clientIpInfo?.proxyAddresses.length">
+                                <th style="width: 30%;">Proxies</th>
+                                <td style="word-wrap: break-word;">{{ clientIpInfo.proxyAddresses.join(', ') }}</td>
+                            </tr>
+                            <tr v-if="clientIpInfo?.realIpAddress">
+                                <th style="width: 30%;">Real IP</th>
+                                <td style="word-wrap: break-word;">{{ clientIpInfo.realIpAddress }}</td>
+                            </tr>
+                            <tr>
+                                <th style="width: 30%;">Browser Agent</th>
+                                <td style="word-wrap: break-word;">{{ browserAgentInfo }}</td>
+                            </tr>
+                            <tr>
+                                <th style="width: 30%;">Platform</th>
+                                <td style="word-wrap: break-word;">{{ platformInfo }}</td>
+                            </tr>
+                            <tr>
+                                <th style="width: 30%;">Language</th>
+                                <td style="word-wrap: break-word;">{{ languageInfo }}</td>
+                            </tr>
+                        </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
 <!-- Testing Ground Section -->
 <section class="testing-ground container">
@@ -57,3 +109,8 @@
         </div>
     </div>
 </section>
+
+@section Scripts {
+    <script type="module" src="~/js/home.js" asp-append-version="true"></script>
+}
+

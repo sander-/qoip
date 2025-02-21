@@ -36,6 +36,13 @@ namespace Qoip.ZeroTrustNetwork.NetworkConnectivity
             return new Response<bool>(ResponseStatus.Ok, true, "Network segmentation check passed.");
         }
 
+        public Response<PortScanResponse> ExecutePortScanRequest(string ipAddress, string portset = "minimal", int timeout = 2000, DetailLevel detailLevel = DetailLevel.Info)
+        {
+            var portScanRequest = new PortScanRequest(ipAddress, portset, timeout, detailLevel);
+            return portScanRequest.Execute();
+        }
+
+
         public Response<TraceRouteResponse> ExecuteTraceRouteRequest(string ipAddress, int maxHops = 30, int timeout = 2000, bool resolveDns = false, DetailLevel detailLevel = DetailLevel.Info)
         {
             var traceRouteRequest = new TraceRouteRequest(ipAddress, maxHops, timeout, resolveDns, detailLevel);

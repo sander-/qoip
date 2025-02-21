@@ -13,7 +13,7 @@ body {
     background: linear-gradient(135deg, #1a1a1a, #292929);
 }
 
-.features {
+.features,.this-is-you {
     padding: 50px 20px;
 }
 
@@ -29,4 +29,9 @@ body {
     padding: 20px;
     background-color: #1e1e1e;
     margin-top: 50px;
+}
+
+.table {
+    background-color: #1e1e1e;
+    color: #ffffff;
 }
