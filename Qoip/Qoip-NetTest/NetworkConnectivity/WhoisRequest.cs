@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Qoip.ZeroTrustNetwork.Common;
 
@@ -9,6 +10,16 @@ namespace Qoip.ZeroTrustNetwork.NetworkConnectivity
     public class WhoisRequest
     {
         public string TargetAddress { get; }
+
+        private static readonly string[] InitialWhoisServers = new[]
+        {
+            "whois.iana.org",
+            "whois.arin.net",
+            "whois.ripe.net",
+            "whois.apnic.net",
+            "whois.lacnic.net",
+            "whois.afrinic.net"
+        };
 
         public WhoisRequest(string targetAddress)
         {
@@ -30,22 +41,30 @@ namespace Qoip.ZeroTrustNetwork.NetworkConnectivity
                     return new Response<WhoisResponse>(ResponseStatus.Failure, null, "Invalid target address.");
                 }
 
-                var whoisServer = "whois.iana.org";
-                var whoisData = await QueryWhoisServerAsync(whoisServer, targetIPAddress.ToString());
-
-                if (string.IsNullOrEmpty(whoisData))
+                foreach (var whoisServer in InitialWhoisServers)
                 {
-                    return new Response<WhoisResponse>(ResponseStatus.Failure, null, "No WHOIS information found.");
+                    var whoisData = await QueryWhoisServerAsync(whoisServer, targetIPAddress.ToString());
+
+                    if (!string.IsNullOrEmpty(whoisData))
+                    {
+                        var referServer = ExtractReferServer(whoisData);
+                        if (!string.IsNullOrEmpty(referServer))
+                        {
+                            whoisData = await QueryWhoisServerAsync(referServer, targetIPAddress.ToString());
+                        }
+
+                        var whoisResponse = new WhoisResponse
+                        {
+                            TargetAddress = TargetAddress,
+                            WhoisServer = whoisServer,
+                            WhoisData = whoisData
+                        };
+
+                        return new Response<WhoisResponse>(ResponseStatus.Ok, whoisResponse, "WHOIS query successful.");
+                    }
                 }
 
-                var whoisResponse = new WhoisResponse
-                {
-                    TargetAddress = TargetAddress,
-                    WhoisServer = whoisServer,
-                    WhoisData = whoisData
-                };
-
-                return new Response<WhoisResponse>(ResponseStatus.Ok, whoisResponse, "WHOIS query successful.");
+                return new Response<WhoisResponse>(ResponseStatus.Failure, null, "No WHOIS information found.");
             }
             catch (Exception ex)
             {
@@ -71,6 +90,12 @@ namespace Qoip.ZeroTrustNetwork.NetworkConnectivity
                     }
                 }
             }
+        }
+
+        private string ExtractReferServer(string whoisData)
+        {
+            var match = Regex.Match(whoisData, @"refer:\s*(\S+)", RegexOptions.IgnoreCase);
+            return match.Success ? match.Groups[1].Value : null;
         }
     }
 }
