@@ -56,7 +56,7 @@ namespace Qoip.ZeroTrustNetwork.NetworkConnectivity
                         var whoisResponse = new WhoisResponse
                         {
                             TargetAddress = TargetAddress,
-                            WhoisServer = whoisServer,
+                            WhoisServer = referServer,
                             WhoisData = whoisData
                         };
 
