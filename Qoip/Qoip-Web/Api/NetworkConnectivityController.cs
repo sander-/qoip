@@ -71,9 +71,11 @@ namespace Qoip.Web.Api
             var ipv4Address = validProxyAddresses.FirstOrDefault(ip => System.Net.IPAddress.TryParse(ip, out var parsedIp) && parsedIp.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork);
             var ipv6Address = validProxyAddresses.FirstOrDefault(ip => System.Net.IPAddress.TryParse(ip, out var parsedIp) && parsedIp.AddressFamily == System.Net.Sockets.AddressFamily.InterNetworkV6);
 
-            if (ipv4Address == clientIpAddress)
+            // If X-Forwarded-For header is filled, use the first IP address as the actual client IP address
+            if (validProxyAddresses.Any())
             {
-                validProxyAddresses.Clear();
+                clientIpAddress = validProxyAddresses.First();
+                proxyAddresses = new List<string> { clientIpAddress };
             }
 
             var clientIpCanonical = GetCanonicalName(clientIpAddress);
@@ -88,7 +90,7 @@ namespace Qoip.Web.Api
                 IPv4Canonical = ipv4Canonical,
                 IPv6Address = ipv6Address,
                 IPv6Canonical = ipv6Canonical,
-                ProxyAddresses = validProxyAddresses,
+                ProxyAddresses = proxyAddresses,
                 RealIpAddress = realIpAddress
             };
 
