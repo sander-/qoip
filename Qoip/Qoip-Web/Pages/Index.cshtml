@@ -48,11 +48,11 @@
                 <div v-else-if="error">{{ error }}</div>
                 <div v-else-if="clientIpInfo">
                     <h3>This is you</h3>
-                    <table class="table table-sm table-bordered" style="table-layout: fixed; width: 100%;">
+                    <table class="table table-sm table-bordered client-ip-table">
                         <tbody>
                             <tr v-if="clientIpInfo.clientIpAddress">
-                                <th style="width: 30%;">Client IP</th>
-                                <td style="word-wrap: break-word; text-align: left;">
+                                <th class="client-ip-label">Client IP</th>
+                                <td class="client-ip-value">
                                     {{ clientIpInfo.clientIpAddress }}
                                     <button v-if="!whoisInfo[clientIpInfo.clientIpAddress]" v-on:click="fetchWhoisInfo(clientIpInfo.clientIpAddress)" class="btn btn-secondary btn-sm">Get WHOIS</button>
                                     <div v-if="whoisLoading[clientIpInfo.clientIpAddress]">Loading WHOIS...</div>
@@ -64,12 +64,12 @@
                                 </td>
                             </tr>
                             <tr v-if="clientIpInfo.clientIpCanonical">
-                                <th style="width: 30%;">Client IP Canonical</th>
-                                <td style="word-wrap: break-word; text-align: left;">{{ clientIpInfo.clientIpCanonical }}</td>
+                                <th class="client-ip-label">Client IP Canonical</th>
+                                <td class="client-ip-value">{{ clientIpInfo.clientIpCanonical }}</td>
                             </tr>
                             <tr v-if="clientIpInfo.iPv4Address">
-                                <th style="width: 30%;">IPv4</th>
-                                <td style="word-wrap: break-word; text-align: left;">
+                                <th class="client-ip-label">IPv4</th>
+                                <td class="client-ip-value">
                                     {{ clientIpInfo.iPv4Address }}
                                     <button v-if="!whoisInfo[clientIpInfo.iPv4Address]" v-on:click="fetchWhoisInfo(clientIpInfo.iPv4Address)" class="btn btn-secondary btn-sm">Get WHOIS</button>
                                     <div v-if="whoisLoading[clientIpInfo.iPv4Address]">Loading WHOIS...</div>
@@ -81,12 +81,12 @@
                                 </td>
                             </tr>
                             <tr v-if="clientIpInfo.iPv4Canonical">
-                                <th style="width: 30%;">IPv4 Canonical</th>
-                                <td style="word-wrap: break-word; text-align: left;">{{ clientIpInfo.iPv4Canonical }}</td>
+                                <th class="client-ip-label">IPv4 Canonical</th>
+                                <td class="client-ip-value">{{ clientIpInfo.iPv4Canonical }}</td>
                             </tr>
                             <tr v-if="clientIpInfo.iPv6Address">
-                                <th style="width: 30%;">IPv6</th>
-                                <td style="word-wrap: break-word; text-align: left;">
+                                <th class="client-ip-label">IPv6</th>
+                                <td class="client-ip-value">
                                     {{ clientIpInfo.iPv6Address }}
                                     <button v-if="!whoisInfo[clientIpInfo.iPv6Address]" v-on:click="fetchWhoisInfo(clientIpInfo.iPv6Address)" class="btn btn-secondary btn-sm">Get WHOIS</button>
                                     <div v-if="whoisLoading[clientIpInfo.iPv6Address]">Loading WHOIS...</div>
@@ -98,12 +98,12 @@
                                 </td>
                             </tr>
                             <tr v-if="clientIpInfo.iPv6Canonical">
-                                <th style="width: 30%;">IPv6 Canonical</th>
-                                <td style="word-wrap: break-word; text-align: left;">{{ clientIpInfo.iPv6Canonical }}</td>
+                                <th class="client-ip-label">IPv6 Canonical</th>
+                                <td class="client-ip-value">{{ clientIpInfo.iPv6Canonical }}</td>
                             </tr>
                             <tr v-if="clientIpInfo.proxyAddresses.length">
-                                <th style="width: 30%;">Proxies</th>
-                                <td style="word-wrap: break-word; text-align: left;">
+                                <th class="client-ip-label">Proxies</th>
+                                <td class="client-ip-value">
                                     <div v-for="proxy in clientIpInfo.proxyAddresses" :key="proxy">
                                         {{ proxy }}
                                         <button v-if="!whoisInfo[proxy]" v-on:click="fetchWhoisInfo(proxy)" class="btn btn-secondary btn-sm">Get WHOIS</button>
@@ -117,8 +117,8 @@
                                 </td>
                             </tr>
                             <tr v-if="clientIpInfo.realIpAddress">
-                                <th style="width: 30%;">Real IP</th>
-                                <td style="word-wrap: break-word; text-align: left;">
+                                <th class="client-ip-label">Real IP</th>
+                                <td class="client-ip-value">
                                     {{ clientIpInfo.realIpAddress }}
                                     <button v-if="!whoisInfo[clientIpInfo.realIpAddress]" v-on:click="fetchWhoisInfo(clientIpInfo.realIpAddress)" class="btn btn-secondary btn-sm">Get WHOIS</button>
                                     <div v-if="whoisLoading[clientIpInfo.realIpAddress]">Loading WHOIS...</div>
@@ -130,16 +130,16 @@
                                 </td>
                             </tr>
                             <tr>
-                                <th style="width: 30%;">Browser Agent</th>
-                                <td style="word-wrap: break-word; text-align: left;">{{ browserAgentInfo }}</td>
+                                <th class="client-ip-label">Browser Agent</th>
+                                <td class="client-ip-value">{{ browserAgentInfo }}</td>
                             </tr>
                             <tr>
-                                <th style="width: 30%;">Platform</th>
-                                <td style="word-wrap: break-word; text-align: left;">{{ platformInfo }}</td>
+                                <th class="client-ip-label">Platform</th>
+                                <td class="client-ip-value">{{ platformInfo }}</td>
                             </tr>
                             <tr>
-                                <th style="width: 30%;">Language</th>
-                                <td style="word-wrap: break-word; text-align: left;">{{ languageInfo }}</td>
+                                <th class="client-ip-label">Language</th>
+                                <td class="client-ip-value">{{ languageInfo }}</td>
                             </tr>
                         </tbody>
                     </table>

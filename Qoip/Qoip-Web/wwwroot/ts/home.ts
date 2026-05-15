@@ -1,6 +1,8 @@
-﻿import axios from 'https://cdn.jsdelivr.net/npm/axios/dist/esm/axios.min.js';
-import { createApp, defineComponent } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js';
+﻿import axios from '../lib/axios/axios.min.js';
+import { createApp, defineComponent } from '../lib/vue/vue.esm-browser.js';
 import { AxiosResponse } from 'axios';
+
+const axiosClient: any = axios;
 
 interface ClientIpResponse {
     clientIpAddress: string;
@@ -33,12 +35,12 @@ const app = createApp(
             };
         },
         methods: {
-            async fetchClientIpInfo() {
+            async fetchClientIpInfo(this: any) {
                 this.loading = true;
                 this.error = null;
                 this.clientIpInfo = null;
                 try {
-                    const response: AxiosResponse<ClientIpResponse> = await axios.get('/api/networkconnectivity/client-ip');
+                    const response: AxiosResponse<ClientIpResponse> = await axiosClient.get('/api/networkconnectivity/client-ip');
                     this.clientIpInfo = response.data;
                 } catch (error) {
                     console.error('Error fetching client IP information:', error);
@@ -47,12 +49,12 @@ const app = createApp(
                     this.loading = false;
                 }
             },
-            async fetchWhoisInfo(ipAddress: string) {
+            async fetchWhoisInfo(this: any, ipAddress: string) {
                 this.whoisLoading[ipAddress] = true;
                 this.whoisError[ipAddress] = null;
                 this.whoisInfo[ipAddress] = null;
                 try {
-                    const response: AxiosResponse<WhoisResponse> = await axios.get(`/api/networkconnectivity/whois?ipAddress=${ipAddress}`);
+                    const response: AxiosResponse<WhoisResponse> = await axiosClient.get(`/api/networkconnectivity/whois?ipAddress=${ipAddress}`);
                     this.whoisInfo[ipAddress] = response.data;
                     console.log(response);
                 } catch (error) {
@@ -63,7 +65,7 @@ const app = createApp(
                 }
             }
         }
-    })
+    } as any)
 );
 
 app.mount('#this-is-you-app');

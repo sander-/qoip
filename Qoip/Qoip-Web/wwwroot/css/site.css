@@ -35,3 +35,17 @@ body {
     background-color: #1e1e1e;
     color: #ffffff;
 }
+
+.client-ip-table {
+    table-layout: fixed;
+    width: 100%;
+}
+
+.client-ip-label {
+    width: 30%;
+}
+
+.client-ip-value {
+    word-wrap: break-word;
+    text-align: left;
+}
