@@ -16,6 +16,7 @@ interface ClientIpResponse {
 }
 
 interface WhoisResponse {
+    whoisServer: string;
     whoisData: string;
 }
 
