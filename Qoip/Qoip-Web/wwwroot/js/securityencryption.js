@@ -7,8 +7,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { createApp, defineComponent } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js';
-import axios from 'https://cdn.jsdelivr.net/npm/axios/dist/esm/axios.min.js';
+import { createApp, defineComponent } from '../lib/vue/vue.esm-browser.js';
+import axios from '../lib/axios/axios.min.js';
+const axiosClient = axios;
 const app = createApp(defineComponent({
     data() {
         return {
@@ -27,7 +28,7 @@ const app = createApp(defineComponent({
                 this.error = null;
                 this.validationResponse = null;
                 try {
-                    const response = yield axios.get(`/api/securityencryption/certificate`, {
+                    const response = yield axiosClient.get(`/api/securityencryption/certificate`, {
                         params: {
                             url: this.url,
                             expirationWarningThresholdInDays: this.expirationWarningThresholdInDays

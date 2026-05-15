@@ -6,8 +6,9 @@
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "outDir": "wwwroot/js",
-    "allowJs": true
+    "rootDir": "wwwroot/ts",
+    "outDir": "wwwroot/js"
   },
-  "include": [ "wwwroot/ts/**/*.ts" ]
+  "include": [ "wwwroot/ts/**/*" ],
+  "exclude": [ "wwwroot/js/**/*" ]
 }
