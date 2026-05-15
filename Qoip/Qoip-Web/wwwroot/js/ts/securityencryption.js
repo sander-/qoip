@@ -7,50 +7,51 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import axios from 'https://cdn.jsdelivr.net/npm/axios/dist/esm/axios.min.js';
-import { createApp, defineComponent } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js';
+import { createApp, defineComponent } from '../lib/vue/vue.esm-browser.js';
+import axios from '../lib/axios/axios.min.js';
+const axiosClient = axios;
 const app = createApp(defineComponent({
     data() {
         return {
             url: '',
-            timeout: 5000,
-            response: null,
+            expirationWarningThresholdInDays: 0,
+            validationResponse: null,
             loading: false,
             error: null,
             copied: false
         };
     },
     methods: {
-        performRequest() {
+        performCertificateValidation() {
             return __awaiter(this, void 0, void 0, function* () {
                 this.loading = true;
                 this.error = null;
-                this.response = null;
+                this.validationResponse = null;
                 try {
-                    const response = yield axios.get('/api/NetworkSecurity/security-headers', {
+                    const response = yield axiosClient.get(`/api/securityencryption/certificate`, {
                         params: {
                             url: this.url,
-                            timeout: this.timeout
+                            expirationWarningThresholdInDays: this.expirationWarningThresholdInDays
                         }
                     });
-                    this.response = response.data;
+                    this.validationResponse = response.data;
                     this.copied = false;
                 }
                 catch (error) {
-                    console.error('Error performing security header analysis:', error);
-                    this.error = 'Error performing security header analysis. Please try again.';
+                    console.error('Error performing certificate validation:', error);
+                    this.error = 'Error performing certificate validation. Please try again.';
                 }
                 finally {
                     this.loading = false;
                 }
             });
         },
-        copyResponse() {
+        copyValidationResponse() {
             return __awaiter(this, void 0, void 0, function* () {
-                if (!this.response) {
+                if (!this.validationResponse) {
                     return;
                 }
-                yield navigator.clipboard.writeText(this.formatJson(this.response));
+                yield navigator.clipboard.writeText(this.formatJson(this.validationResponse));
                 this.copied = true;
             });
         },
@@ -59,8 +60,8 @@ const app = createApp(defineComponent({
         },
         clearForm() {
             this.url = '';
-            this.timeout = 5000;
-            this.response = null;
+            this.expirationWarningThresholdInDays = 0;
+            this.validationResponse = null;
             this.error = null;
             this.copied = false;
         }

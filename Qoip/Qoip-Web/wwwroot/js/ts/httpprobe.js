@@ -7,8 +7,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import axios from 'https://cdn.jsdelivr.net/npm/axios/dist/esm/axios.min.js';
-import { createApp, defineComponent } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js';
+import axios from '../lib/axios/axios.min.js';
+import { createApp, defineComponent } from '../lib/vue/vue.esm-browser.js';
+const axiosClient = axios;
 const app = createApp(defineComponent({
     data() {
         return {
@@ -27,7 +28,7 @@ const app = createApp(defineComponent({
                 this.error = null;
                 this.response = null;
                 try {
-                    const response = yield axios.get('/api/NetworkSecurity/security-headers', {
+                    const response = yield axiosClient.get('/api/NetworkConnectivity/http-probe', {
                         params: {
                             url: this.url,
                             timeout: this.timeout
@@ -37,8 +38,8 @@ const app = createApp(defineComponent({
                     this.copied = false;
                 }
                 catch (error) {
-                    console.error('Error performing security header analysis:', error);
-                    this.error = 'Error performing security header analysis. Please try again.';
+                    console.error('Error performing HTTP probe:', error);
+                    this.error = 'Error performing HTTP probe. Please try again.';
                 }
                 finally {
                     this.loading = false;

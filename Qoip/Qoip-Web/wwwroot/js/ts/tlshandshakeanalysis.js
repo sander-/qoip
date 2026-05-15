@@ -7,12 +7,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import axios from 'https://cdn.jsdelivr.net/npm/axios/dist/esm/axios.min.js';
-import { createApp, defineComponent } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js';
+import axios from '../lib/axios/axios.min.js';
+import { createApp, defineComponent } from '../lib/vue/vue.esm-browser.js';
+const axiosClient = axios;
 const app = createApp(defineComponent({
     data() {
         return {
-            url: '',
+            host: '',
+            port: 443,
             timeout: 5000,
             response: null,
             loading: false,
@@ -27,9 +29,10 @@ const app = createApp(defineComponent({
                 this.error = null;
                 this.response = null;
                 try {
-                    const response = yield axios.get('/api/NetworkSecurity/security-headers', {
+                    const response = yield axiosClient.get('/api/NetworkSecurity/tls-handshake', {
                         params: {
-                            url: this.url,
+                            host: this.host,
+                            port: this.port,
                             timeout: this.timeout
                         }
                     });
@@ -37,8 +40,8 @@ const app = createApp(defineComponent({
                     this.copied = false;
                 }
                 catch (error) {
-                    console.error('Error performing security header analysis:', error);
-                    this.error = 'Error performing security header analysis. Please try again.';
+                    console.error('Error performing TLS handshake analysis:', error);
+                    this.error = 'Error performing TLS handshake analysis. Please try again.';
                 }
                 finally {
                     this.loading = false;
@@ -58,7 +61,8 @@ const app = createApp(defineComponent({
             return JSON.stringify(value, null, 2);
         },
         clearForm() {
-            this.url = '';
+            this.host = '';
+            this.port = 443;
             this.timeout = 5000;
             this.response = null;
             this.error = null;

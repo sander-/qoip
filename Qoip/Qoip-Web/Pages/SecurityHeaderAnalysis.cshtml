@@ -29,8 +29,11 @@
             </div>
         </div>
         <div v-if="response" class="mt-4">
-            <h2 class="h5">Security Header Analysis Response</h2>
-            <pre class="bg-dark p-3 border rounded">{{ response }}</pre>
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <h2 class="h5 mb-0">Security Header Analysis Response</h2>
+                <button type="button" class="btn btn-outline-secondary btn-sm" v-on:click="copyResponse">{{ copied ? 'Copied' : 'Copy JSON' }}</button>
+            </div>
+            <pre class="bg-dark p-3 border rounded">{{ formatJson(response) }}</pre>
         </div>
         <div v-if="error" class="mt-4 alert alert-danger">
             {{ error }}

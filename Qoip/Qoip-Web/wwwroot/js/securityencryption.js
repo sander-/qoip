@@ -16,7 +16,8 @@ const app = createApp(defineComponent({
             expirationWarningThresholdInDays: 0,
             validationResponse: null,
             loading: false,
-            error: null
+            error: null,
+            copied: false
         };
     },
     methods: {
@@ -33,6 +34,7 @@ const app = createApp(defineComponent({
                         }
                     });
                     this.validationResponse = response.data;
+                    this.copied = false;
                 }
                 catch (error) {
                     console.error('Error performing certificate validation:', error);
@@ -43,11 +45,24 @@ const app = createApp(defineComponent({
                 }
             });
         },
+        copyValidationResponse() {
+            return __awaiter(this, void 0, void 0, function* () {
+                if (!this.validationResponse) {
+                    return;
+                }
+                yield navigator.clipboard.writeText(this.formatJson(this.validationResponse));
+                this.copied = true;
+            });
+        },
+        formatJson(value) {
+            return JSON.stringify(value, null, 2);
+        },
         clearForm() {
             this.url = '';
             this.expirationWarningThresholdInDays = 0;
             this.validationResponse = null;
             this.error = null;
+            this.copied = false;
         }
     }
 }));

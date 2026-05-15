@@ -33,8 +33,11 @@
             </div>
         </div>
         <div v-if="validationResponse" class="mt-4">
-            <h2 class="h5">Validation Response</h2>
-            <pre class="bg-dark p-3 border rounded">{{ validationResponse }}</pre>
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <h2 class="h5 mb-0">Validation Response</h2>
+                <button type="button" class="btn btn-outline-secondary btn-sm" v-on:click="copyValidationResponse">{{ copied ? 'Copied' : 'Copy JSON' }}</button>
+            </div>
+            <pre class="bg-dark p-3 border rounded">{{ formatJson(validationResponse) }}</pre>
         </div>
         <div v-if="error" class="mt-4 alert alert-danger">
             {{ error }}

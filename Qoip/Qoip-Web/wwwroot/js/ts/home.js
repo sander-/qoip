@@ -12,58 +12,55 @@ import { createApp, defineComponent } from 'https://unpkg.com/vue@3/dist/vue.esm
 const app = createApp(defineComponent({
     data() {
         return {
-            url: '',
-            timeout: 5000,
-            response: null,
+            clientIpInfo: null,
+            whoisInfo: {},
+            browserAgentInfo: navigator.userAgent,
+            platformInfo: navigator.platform,
+            languageInfo: navigator.language,
             loading: false,
+            whoisLoading: {},
             error: null,
-            copied: false
+            whoisError: {}
         };
     },
     methods: {
-        performRequest() {
+        fetchClientIpInfo() {
             return __awaiter(this, void 0, void 0, function* () {
                 this.loading = true;
                 this.error = null;
-                this.response = null;
+                this.clientIpInfo = null;
                 try {
-                    const response = yield axios.get('/api/NetworkSecurity/security-headers', {
-                        params: {
-                            url: this.url,
-                            timeout: this.timeout
-                        }
-                    });
-                    this.response = response.data;
-                    this.copied = false;
+                    const response = yield axios.get('/api/networkconnectivity/client-ip');
+                    this.clientIpInfo = response.data;
                 }
                 catch (error) {
-                    console.error('Error performing security header analysis:', error);
-                    this.error = 'Error performing security header analysis. Please try again.';
+                    console.error('Error fetching client IP information:', error);
+                    this.error = 'Failed to load client IP information.';
                 }
                 finally {
                     this.loading = false;
                 }
             });
         },
-        copyResponse() {
+        fetchWhoisInfo(ipAddress) {
             return __awaiter(this, void 0, void 0, function* () {
-                if (!this.response) {
-                    return;
+                this.whoisLoading[ipAddress] = true;
+                this.whoisError[ipAddress] = null;
+                this.whoisInfo[ipAddress] = null;
+                try {
+                    const response = yield axios.get(`/api/networkconnectivity/whois?ipAddress=${ipAddress}`);
+                    this.whoisInfo[ipAddress] = response.data;
+                    console.log(response);
                 }
-                yield navigator.clipboard.writeText(this.formatJson(this.response));
-                this.copied = true;
+                catch (error) {
+                    console.error(`Error fetching WHOIS information for ${ipAddress}:`, error);
+                    this.whoisError[ipAddress] = 'Failed to load WHOIS information.';
+                }
+                finally {
+                    this.whoisLoading[ipAddress] = false;
+                }
             });
-        },
-        formatJson(value) {
-            return JSON.stringify(value, null, 2);
-        },
-        clearForm() {
-            this.url = '';
-            this.timeout = 5000;
-            this.response = null;
-            this.error = null;
-            this.copied = false;
         }
     }
 }));
-app.mount('#app');
+app.mount('#this-is-you-app');

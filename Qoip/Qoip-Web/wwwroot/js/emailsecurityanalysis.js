@@ -18,7 +18,8 @@ const app = createApp(defineComponent({
             timeout: 5000,
             response: null,
             loading: false,
-            error: null
+            error: null,
+            copied: false
         };
     },
     methods: {
@@ -37,6 +38,7 @@ const app = createApp(defineComponent({
                         }
                     });
                     this.response = response.data;
+                    this.copied = false;
                 }
                 catch (error) {
                     console.error('Error performing email security analysis:', error);
@@ -47,6 +49,18 @@ const app = createApp(defineComponent({
                 }
             });
         },
+        copyResponse() {
+            return __awaiter(this, void 0, void 0, function* () {
+                if (!this.response) {
+                    return;
+                }
+                yield navigator.clipboard.writeText(this.formatJson(this.response));
+                this.copied = true;
+            });
+        },
+        formatJson(value) {
+            return JSON.stringify(value, null, 2);
+        },
         clearForm() {
             this.domain = '';
             this.dkimSelector = 'default';
@@ -54,6 +68,7 @@ const app = createApp(defineComponent({
             this.timeout = 5000;
             this.response = null;
             this.error = null;
+            this.copied = false;
         }
     }
 }));

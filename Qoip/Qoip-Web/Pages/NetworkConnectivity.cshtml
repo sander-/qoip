@@ -26,8 +26,11 @@
             </div>
         </div>
         <div v-if="dnsResponse" class="mt-4">
-            <h2 class="h5">DNS Response</h2>
-            <pre class="bg-dark p-3 border rounded">{{ dnsResponse }}</pre>
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <h2 class="h5 mb-0">DNS Response</h2>
+                <button type="button" class="btn btn-outline-secondary btn-sm" v-on:click="copyDnsResponse">{{ dnsCopied ? 'Copied' : 'Copy JSON' }}</button>
+            </div>
+            <pre class="bg-dark p-3 border rounded">{{ formatJson(dnsResponse) }}</pre>
         </div>
         <div v-if="error" class="mt-4 alert alert-danger">
             {{ error }}
@@ -69,8 +72,11 @@
             </div>
         </div>
         <div v-if="tracerouteResponse" class="mt-4">
-            <h2 class="h5">Traceroute Response</h2>
-            <pre class="bg-dark p-3 border rounded">{{ tracerouteResponse }}</pre>
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <h2 class="h5 mb-0">Traceroute Response</h2>
+                <button type="button" class="btn btn-outline-secondary btn-sm" v-on:click="copyTracerouteResponse">{{ tracerouteCopied ? 'Copied' : 'Copy JSON' }}</button>
+            </div>
+            <pre class="bg-dark p-3 border rounded">{{ formatJson(tracerouteResponse) }}</pre>
         </div>
         <div v-if="tracerouteError" class="mt-4 alert alert-danger">
             {{ tracerouteError }}

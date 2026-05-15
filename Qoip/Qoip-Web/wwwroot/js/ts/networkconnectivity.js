@@ -7,8 +7,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import axios from 'https://cdn.jsdelivr.net/npm/axios/dist/esm/axios.min.js';
-import { createApp, defineComponent } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js';
+import axios from '../lib/axios/axios.min.js';
+import { createApp, defineComponent } from '../lib/vue/vue.esm-browser.js';
+const axiosClient = axios;
 const app = createApp(defineComponent({
     data() {
         return {
@@ -34,7 +35,7 @@ const app = createApp(defineComponent({
                 this.error = null;
                 this.dnsResponse = null;
                 try {
-                    const response = yield axios.get(`/api/NetworkConnectivity/dns`, {
+                    const response = yield axiosClient.get(`/api/NetworkConnectivity/dns`, {
                         params: {
                             domain: this.domain
                         }
@@ -57,7 +58,7 @@ const app = createApp(defineComponent({
                 this.tracerouteError = null;
                 this.tracerouteResponse = null;
                 try {
-                    const response = yield axios.get(`/api/NetworkConnectivity/traceroute`, {
+                    const response = yield axiosClient.get(`/api/NetworkConnectivity/traceroute`, {
                         params: {
                             host: this.target,
                             maxHops: this.maxHops,
