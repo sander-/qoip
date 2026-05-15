@@ -1,5 +1,6 @@
 using Qoip.ZeroTrustNetwork.Common;
 using Qoip.ZeroTrustNetwork.NetworkConnectivity;
+using Qoip.ZeroTrustNetwork.NetworkSecurity;
 
 namespace Qoip.ZeroTrustNetwork.NetworkConnectivity
 {
@@ -14,6 +15,12 @@ namespace Qoip.ZeroTrustNetwork.NetworkConnectivity
         public Response<PortScanResponse> ExecutePortScanRequest(string ipAddress, string portset = "minimal",
             int timeout = 2000, DetailLevel detailLevel = DetailLevel.Info);
         public Response<WhoisResponse> ExecuteWhoisRequest(string ipAddress);
+        public Response<HttpProbeResponse> ExecuteHttpProbeRequest(string url, int timeout = 5000, DetailLevel detailLevel = DetailLevel.Info);
+        public Response<RangeScanResponse> ExecuteRangeScanRequest(string range, string portSet = "minimal", int timeout = 2000, DetailLevel detailLevel = DetailLevel.Info);
+        public Response<DnsSecAnalysisResponse> ExecuteDnsSecAnalysisRequest(string domainName, string? dnsServer = null, int timeout = 5000, DetailLevel detailLevel = DetailLevel.Info);
+        public Response<SecurityHeaderAnalysisResponse> ExecuteSecurityHeaderAnalysisRequest(string url, int timeout = 5000, DetailLevel detailLevel = DetailLevel.Info);
+        public Response<TlsHandshakeAnalysisResponse> ExecuteTlsHandshakeAnalysisRequest(string host, int port = 443, int timeout = 5000, DetailLevel detailLevel = DetailLevel.Info);
+        public Response<EmailSecurityAnalysisResponse> ExecuteEmailSecurityAnalysisRequest(string domainName, string dkimSelector = "default", string? dnsServer = null, int timeout = 5000, DetailLevel detailLevel = DetailLevel.Info);
     }
 }
 

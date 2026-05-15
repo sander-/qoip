@@ -125,6 +125,42 @@ namespace Qoip.Web.Api
             return Ok(whoisResponse.Data);
         }
 
+        [HttpGet("http-probe")]
+        public IActionResult PerformHttpProbe([FromQuery] string url, [FromQuery] int timeout = 5000)
+        {
+            if (string.IsNullOrEmpty(url))
+            {
+                return BadRequest("URL is required.");
+            }
+
+            var response = _networkConnectivity.ExecuteHttpProbeRequest(url, timeout);
+            return Ok(response);
+        }
+
+        [HttpGet("range-scan")]
+        public IActionResult PerformRangeScan([FromQuery] string range, [FromQuery] string portSet = "minimal", [FromQuery] int timeout = 2000)
+        {
+            if (string.IsNullOrEmpty(range))
+            {
+                return BadRequest("Range is required.");
+            }
+
+            var response = _networkConnectivity.ExecuteRangeScanRequest(range, portSet, timeout);
+            return Ok(response);
+        }
+
+        [HttpGet("dnssec")]
+        public IActionResult PerformDnsSecAnalysis([FromQuery] string domain, [FromQuery] string? dnsServer = null, [FromQuery] int timeout = 5000)
+        {
+            if (string.IsNullOrEmpty(domain))
+            {
+                return BadRequest("Domain is required.");
+            }
+
+            var response = _networkConnectivity.ExecuteDnsSecAnalysisRequest(domain, dnsServer, timeout);
+            return Ok(response);
+        }
+
         private string? GetCanonicalName(string? ipAddress)
         {
             if (string.IsNullOrEmpty(ipAddress))

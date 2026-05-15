@@ -5,6 +5,7 @@ using System.Net;
 using System.Text;
 using Qoip.ZeroTrustNetwork.NetworkConnectivity.Parsers;
 using Qoip.ZeroTrustNetwork.NetworkConnectivity;
+using Qoip.ZeroTrustNetwork.NetworkSecurity;
 
 namespace Qoip.ZeroTrustNetwork.NetworkConnectivity
 {
@@ -46,6 +47,43 @@ namespace Qoip.ZeroTrustNetwork.NetworkConnectivity
         {
             var whoisRequest = new WhoisRequest(ipAddress);
             return whoisRequest.Execute();
+        }
+
+        public Response<HttpProbeResponse> ExecuteHttpProbeRequest(string url, int timeout = 5000, DetailLevel detailLevel = DetailLevel.Info)
+        {
+            var httpProbeRequest = new HttpProbeRequest(url, timeout, detailLevel);
+            return httpProbeRequest.Execute();
+        }
+
+        public Response<RangeScanResponse> ExecuteRangeScanRequest(string range, string portSet = "minimal", int timeout = 2000, DetailLevel detailLevel = DetailLevel.Info)
+        {
+            var rangeScanRequest = new RangeScanRequest(range, portSet, timeout, detailLevel);
+            return rangeScanRequest.Execute();
+        }
+
+        public Response<DnsSecAnalysisResponse> ExecuteDnsSecAnalysisRequest(string domainName, string? dnsServer = null, int timeout = 5000, DetailLevel detailLevel = DetailLevel.Info)
+        {
+            dnsServer ??= GetSystemDefaultDnsServer();
+            var dnsSecAnalysisRequest = new DnsSecAnalysisRequest(domainName, dnsServer, timeout, detailLevel);
+            return dnsSecAnalysisRequest.Execute();
+        }
+
+        public Response<SecurityHeaderAnalysisResponse> ExecuteSecurityHeaderAnalysisRequest(string url, int timeout = 5000, DetailLevel detailLevel = DetailLevel.Info)
+        {
+            var securityHeaderAnalysisRequest = new SecurityHeaderAnalysisRequest(url, timeout, detailLevel);
+            return securityHeaderAnalysisRequest.Execute();
+        }
+
+        public Response<TlsHandshakeAnalysisResponse> ExecuteTlsHandshakeAnalysisRequest(string host, int port = 443, int timeout = 5000, DetailLevel detailLevel = DetailLevel.Info)
+        {
+            var tlsHandshakeAnalysisRequest = new TlsHandshakeAnalysisRequest(host, port, timeout, detailLevel);
+            return tlsHandshakeAnalysisRequest.Execute();
+        }
+
+        public Response<EmailSecurityAnalysisResponse> ExecuteEmailSecurityAnalysisRequest(string domainName, string dkimSelector = "default", string? dnsServer = null, int timeout = 5000, DetailLevel detailLevel = DetailLevel.Info)
+        {
+            var emailSecurityAnalysisRequest = new EmailSecurityAnalysisRequest(domainName, dnsServer, dkimSelector, timeout, detailLevel);
+            return emailSecurityAnalysisRequest.Execute();
         }
 
         public Response<TraceRouteResponse> ExecuteTraceRouteRequest(string ipAddress, int maxHops = 30, int timeout = 2000, bool resolveDns = false, DetailLevel detailLevel = DetailLevel.Info)

@@ -1,5 +1,6 @@
 ﻿using Qoip.ZeroTrustNetwork.Common;
 using Qoip.ZeroTrustNetwork.NetworkConnectivity;
+using Qoip.ZeroTrustNetwork.NetworkSecurity;
 using Qoip.ZeroTrustNetwork.SecurityEncryption;
 
 namespace Qoip_Examples
@@ -15,6 +16,8 @@ namespace Qoip_Examples
             //SecurityEncryptionExamples();
 
             // NetworkConnectivityPortScanExamples();
+
+            //NetworkSecurityExamples();
 
             NetworkConnectivityWhoisExamples();
 
@@ -73,6 +76,35 @@ namespace Qoip_Examples
                 .Then(result => networkConnectivity
                     .ExecuteTraceRouteRequest(result.FirstRecord, resolveDns: true));
             PrintResponse(traceRouteResponseC);
+        }
+
+        static private void NetworkSecurityExamples()
+        {
+            var networkConnectivity = new NetworkConnectivity();
+
+            Console.WriteLine("Performing an HTTP probe...");
+            var httpProbeResponse = networkConnectivity.ExecuteHttpProbeRequest("https://example.com");
+            PrintResponse(httpProbeResponse);
+
+            Console.WriteLine("Analyzing HTTP security headers...");
+            var headerAnalysisResponse = networkConnectivity.ExecuteSecurityHeaderAnalysisRequest("https://example.com");
+            PrintResponse(headerAnalysisResponse);
+
+            Console.WriteLine("Analyzing the TLS handshake...");
+            var tlsHandshakeResponse = networkConnectivity.ExecuteTlsHandshakeAnalysisRequest("example.com");
+            PrintResponse(tlsHandshakeResponse);
+
+            Console.WriteLine("Analyzing email security records...");
+            var emailSecurityResponse = networkConnectivity.ExecuteEmailSecurityAnalysisRequest("example.com");
+            PrintResponse(emailSecurityResponse);
+
+            Console.WriteLine("Analyzing DNSSEC posture...");
+            var dnsSecResponse = networkConnectivity.ExecuteDnsSecAnalysisRequest("example.com");
+            PrintResponse(dnsSecResponse);
+
+            Console.WriteLine("Scanning a small CIDR range...");
+            var rangeScanResponse = networkConnectivity.ExecuteRangeScanRequest("127.0.0.1/32");
+            PrintResponse(rangeScanResponse);
         }
 
         static private void SecurityEncryptionExamples()
