@@ -10,13 +10,13 @@ namespace Qoip.ZeroTrustNetwork.NetworkConnectivity
 {
     public class PortScanResponse
     {
-        public string IpAddress { get; set; }
+        public string IpAddress { get; set; } = string.Empty;
         public DateTime ScanStartTime { get; set; }
         public DateTime ScanEndTime { get; set; }
         public DetailLevel DetailLevel { get; set; }
 
         [JsonIgnore]
-        public Dictionary<int, bool> UnorderedPortResults { get; set; }
+        public Dictionary<int, bool> UnorderedPortResults { get; set; } = new();
         public List<int> OpenPorts => UnorderedPortResults != null ? new List<int>(UnorderedPortResults.Where(kv => kv.Value).Select(kv => kv.Key)) : new List<int>();
         public double ExecutionTimeMilliseconds => Math.Round((ScanEndTime - ScanStartTime).TotalMilliseconds);
 

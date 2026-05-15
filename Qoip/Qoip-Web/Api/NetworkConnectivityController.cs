@@ -1,7 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Qoip.ZeroTrustNetwork.NetworkConnectivity;
-using Qoip.ZeroTrustNetwork.SecurityEncryption;
 using System.Net.Sockets;
 using System.Net;
 
@@ -42,7 +40,7 @@ namespace Qoip.Web.Api
             {
                 // If the host is not an IP address, resolve it to an IP address
                 var dnsResponse = _networkConnectivity.ExecuteDnsRequest(host);
-                if (dnsResponse.Status != Qoip.ZeroTrustNetwork.Common.ResponseStatus.Ok)
+                if (dnsResponse.Status != Qoip.ZeroTrustNetwork.Common.ResponseStatus.Ok || dnsResponse.Data == null)
                 {
                     return BadRequest("Failed to resolve the host to an IP address.");
                 }
@@ -51,7 +49,9 @@ namespace Qoip.Web.Api
 
             var traceRouteResponse = _networkConnectivity.ExecuteTraceRouteRequest(ipAddress, maxHops, timeout, resolveDns);
             // in the response, obfuscate the first result  
-            if (traceRouteResponse.Status == Qoip.ZeroTrustNetwork.Common.ResponseStatus.Ok)
+            if (traceRouteResponse.Status == Qoip.ZeroTrustNetwork.Common.ResponseStatus.Ok &&
+                traceRouteResponse.Data != null &&
+                traceRouteResponse.Data.TraceResults.Count > 0)
             {
                 traceRouteResponse.Data.TraceResults[0].IpAddress = "xxx.xxx.xxx.xxx";
                 traceRouteResponse.Data.TraceResults[0].Hostname = "***";
@@ -74,14 +74,18 @@ namespace Qoip.Web.Api
             // If X-Forwarded-For header is filled, use the first IP address as the actual client IP address
             if (validProxyAddresses.Any())
             {
-                proxyAddresses = new List<string> { clientIpAddress };
+                proxyAddresses = string.IsNullOrEmpty(clientIpAddress)
+                    ? new List<string>()
+                    : new List<string> { clientIpAddress };
                 clientIpAddress = validProxyAddresses.First();
             }
 
             // If X-Real-IP header is filled, use it as the actual client IP address
             if (!string.IsNullOrEmpty(realIpAddress) && System.Net.IPAddress.TryParse(realIpAddress, out _))
             {
-                proxyAddresses = new List<string> { clientIpAddress };
+                proxyAddresses = string.IsNullOrEmpty(clientIpAddress)
+                    ? new List<string>()
+                    : new List<string> { clientIpAddress };
                 clientIpAddress = realIpAddress;
             }
 
@@ -117,12 +121,11 @@ namespace Qoip.Web.Api
                 return BadRequest("IP address is required.");
             }
 
-            var whoisRequest = new WhoisRequest(ipAddress);
-            var whoisResponse = await whoisRequest.ExecuteAsync();
+            var whoisResponse = await Task.Run(() => _networkConnectivity.ExecuteWhoisRequest(ipAddress));
             return Ok(whoisResponse.Data);
         }
 
-        private string GetCanonicalName(string ipAddress)
+        private string? GetCanonicalName(string? ipAddress)
         {
             if (string.IsNullOrEmpty(ipAddress))
             {

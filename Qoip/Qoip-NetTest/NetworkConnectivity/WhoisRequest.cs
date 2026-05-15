@@ -75,12 +75,10 @@ namespace Qoip.ZeroTrustNetwork.NetworkConnectivity
 
         private async Task<string> QueryWhoisServerAsync(string whoisServer, string query)
         {
-            // include n in query to get more detailed information
-            query = $"{query}";
-
             using (var tcpClient = new TcpClient())
             {
-                await tcpClient.ConnectAsync(whoisServer, 43);
+                using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+                await tcpClient.ConnectAsync(whoisServer, 43, cts.Token);
                 using (var networkStream = tcpClient.GetStream())
                 {
                     var queryBytes = Encoding.ASCII.GetBytes(query + "\r\n");
@@ -88,14 +86,13 @@ namespace Qoip.ZeroTrustNetwork.NetworkConnectivity
 
                     using (var reader = new StreamReader(networkStream, Encoding.ASCII))
                     {
-                        var response = await reader.ReadToEndAsync();
-                        return response;
+                        return await reader.ReadToEndAsync(cts.Token);
                     }
                 }
             }
         }
 
-        private string ExtractReferServer(string whoisData)
+        private string? ExtractReferServer(string whoisData)
         {
             var match = Regex.Match(whoisData, @"refer:\s*(\S+)", RegexOptions.IgnoreCase);
             return match.Success ? match.Groups[1].Value : null;

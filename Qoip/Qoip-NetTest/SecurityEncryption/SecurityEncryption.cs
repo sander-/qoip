@@ -1,24 +1,22 @@
 using Qoip.ZeroTrustNetwork.Common;
-using Qoip.ZeroTrustNetwork.NetworkConnectivity;
 using Qoip.ZeroTrustNetwork.SecurityEncryption;
-using System.Security.Cryptography.X509Certificates;
 
 namespace Qoip.ZeroTrustNetwork.SecurityEncryption
 {
     public class SecurityEncryption : ISecurityEncryption
     {
-        private Response<CertificateValidationResponse> _certificateValidationResponse;
+        private Response<CertificateValidationResponse>? _certificateValidationResponse;
 
 
         public SecurityEncryption WithCertificateAt(string url)
         {
-            _certificateValidationResponse = GetCertificateFromUrl(url);
+            ValidateCertificate(url);
             return this;
         }
 
         public DateTime GetExpiration()
         {
-            return _certificateValidationResponse.Data.ValidTo;
+            return _certificateValidationResponse?.Data?.ValidTo ?? throw new InvalidOperationException("Certificate has not been validated.");
         }
 
         public Response<CertificateValidationResponse> ValidateCertificate(string url, int expirationWarningThresholdInDays = 0)
@@ -42,15 +40,9 @@ namespace Qoip.ZeroTrustNetwork.SecurityEncryption
             return this;
         }
 
-        private Response<CertificateValidationResponse> GetCertificateFromUrl(string url)
-        {
-            var request = new CertificateValidationRequest(url);
-            return request.Execute();
-        }
-
         public Response<CertificateValidationResponse> GetValidationResponse()
         {
-            return _certificateValidationResponse;
+            return _certificateValidationResponse ?? new Response<CertificateValidationResponse>(ResponseStatus.Failure, null, "Certificate has not been validated.");
         }
     }
 }

@@ -10,7 +10,7 @@ namespace Qoip.ZeroTrustNetwork.NetworkConnectivity
 {
     public class TraceRouteResponse
     {
-        public string TargetAddress { get; set; }
+        public string TargetAddress { get; set; } = string.Empty;
         public int MaxHops { get; set; }
         public int Timeout { get; set; }
         public DetailLevel DetailLevel { get; set; }        
@@ -28,10 +28,10 @@ namespace Qoip.ZeroTrustNetwork.NetworkConnectivity
     public class TraceRouteResult
     {
         public int Hop { get; set; }
-        public string IpAddress { get; set; }
-        public string Hostname { get; set; }
+        public string IpAddress { get; set; } = string.Empty;
+        public string Hostname { get; set; } = string.Empty;
         public long RoundTripTime { get; set; }
-        public string Status { get; set; }
+        public string Status { get; set; } = string.Empty;
 
     }
 }

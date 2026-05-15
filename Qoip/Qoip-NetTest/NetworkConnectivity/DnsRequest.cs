@@ -3,7 +3,6 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using Qoip.ZeroTrustNetwork.NetworkConnectivity.Parsers;
-using Qoip.ZeroTrustNetwork.NetworkConnectivity;
 
 namespace Qoip.ZeroTrustNetwork.NetworkConnectivity
 {
@@ -101,9 +100,8 @@ namespace Qoip.ZeroTrustNetwork.NetworkConnectivity
         private (byte[] query, string readableQuery) CreateDnsQuery(string domainName, string queryType)
         {
             var query = new List<byte>();
-            var random = new Random();
             var transactionId = new byte[2];
-            random.NextBytes(transactionId);
+            System.Security.Cryptography.RandomNumberGenerator.Fill(transactionId);
 
             // Transaction ID
             query.AddRange(transactionId);

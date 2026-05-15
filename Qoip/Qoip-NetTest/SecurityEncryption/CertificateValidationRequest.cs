@@ -26,13 +26,27 @@ namespace Qoip.ZeroTrustNetwork.SecurityEncryption
         {
             using (var httpClientHandler = new HttpClientHandler())
             {
-                CertificateValidationResponse certificateDetails = null;
-                string errorMessage = null;
+                CertificateValidationResponse? certificateDetails = null;
+                string? errorMessage = null;
                 ResponseStatus responseStatus = ResponseStatus.Ok;
 
                 httpClientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) =>
                 {
+                    if (cert is null)
+                    {
+                        errorMessage = "Certificate was not provided by the remote endpoint.";
+                        responseStatus = ResponseStatus.Failure;
+                        return false;
+                    }
+
                     certificateDetails = ParseCertificate(cert);
+
+                    if (chain is null)
+                    {
+                        errorMessage = "Certificate chain information was not provided by the remote endpoint.";
+                        responseStatus = ResponseStatus.Failure;
+                        return false;
+                    }
 
                     // Set chain policy for revocation check
                     chain.ChainPolicy.RevocationMode = X509RevocationMode.Online;
@@ -83,21 +97,17 @@ namespace Qoip.ZeroTrustNetwork.SecurityEncryption
                 using var httpClient = new HttpClient(httpClientHandler);
                 try
                 {
-                    var response = httpClient.GetAsync(Url).Result;
-                    if (response.IsSuccessStatusCode && certificateDetails != null)
+                    httpClient.GetAsync(Url).GetAwaiter().GetResult();
+                    if (certificateDetails != null)
                     {
                         string message = responseStatus == ResponseStatus.Warning
-                            ? errorMessage
+                            ? errorMessage ?? "Certificate is approaching expiration."
                             : "No SSL policy errors and certificate is valid.";
                         return new Response<CertificateValidationResponse>(responseStatus, certificateDetails, message);
                     }
-                    else if (certificateDetails != null)
-                    {
-                        return new Response<CertificateValidationResponse>(responseStatus, certificateDetails, responseStatus == ResponseStatus.Warning ? errorMessage : "No SSL policy errors and certificate is valid.");
-                    }
                     else
                     {
-                        return new Response<CertificateValidationResponse>(ResponseStatus.Failure, certificateDetails, errorMessage ?? "Certificate validation failed.");
+                        return new Response<CertificateValidationResponse>(ResponseStatus.Failure, null, errorMessage ?? "Certificate validation failed.");
                     }
                 }
                 catch (HttpRequestException ex)
@@ -123,10 +133,11 @@ namespace Qoip.ZeroTrustNetwork.SecurityEncryption
 
             foreach (var extension in cert.Extensions)
             {
-                string key = extension.Oid.FriendlyName ?? extension.Oid.Value;
+                var oidValue = extension.Oid?.Value;
+                string key = extension.Oid?.FriendlyName ?? oidValue ?? "Unknown OID";
                 List<string> values;
 
-                switch (extension.Oid.Value)
+                switch (oidValue)
                 {
                     case "2.5.29.17": // OID for Subject Alternative Name
                         values = ParseSubjectAlternativeNameExtension(extension, alternativeNames);
@@ -175,12 +186,12 @@ namespace Qoip.ZeroTrustNetwork.SecurityEncryption
 
             return new CertificateValidationResponse
             {
-                IssuedTo = cert.Subject,
-                IssuedBy = cert.Issuer,
+                IssuedTo = cert.Subject ?? string.Empty,
+                IssuedBy = cert.Issuer ?? string.Empty,
                 ValidityPeriod = $"{cert.NotBefore} - {cert.NotAfter}",
-                Fingerprints = cert.Thumbprint,
+                Fingerprints = cert.Thumbprint ?? string.Empty,
                 Version = cert.Version,
-                Algorithm = cert.SignatureAlgorithm.FriendlyName,
+                Algorithm = cert.SignatureAlgorithm.FriendlyName ?? cert.SignatureAlgorithm.Value ?? string.Empty,
                 Extensions = extensionData,
                 AlternativeNames = alternativeNames,
                 ValidFrom = cert.NotBefore,
@@ -392,7 +403,7 @@ namespace Qoip.ZeroTrustNetwork.SecurityEncryption
 
             foreach (var oid in enhancedKeyUsageExtension.EnhancedKeyUsages)
             {
-                ekuList.Add(oid.FriendlyName ?? oid.Value);
+                ekuList.Add(oid.FriendlyName ?? oid.Value ?? string.Empty);
             }
 
             return ekuList;

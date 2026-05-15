@@ -10,7 +10,7 @@ namespace Qoip.ZeroTrustNetwork.NetworkConnectivity
 {
     public class NetworkConnectivity : INetworkConnectivity
     {
-        public string DnsServer { get; set; }
+        public string DnsServer { get; set; } = string.Empty;
         public string QueryType { get; set; } = "A";
         public int Timeout { get; set; } = 5000;
         public int MaxHops { get; set; } = 30;

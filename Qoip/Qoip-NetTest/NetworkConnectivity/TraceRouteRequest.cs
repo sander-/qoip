@@ -70,9 +70,9 @@ namespace Qoip.ZeroTrustNetwork.NetworkConnectivity
                         {
                             // Try using UDP to infer the IP address of the missing hop
                             var udpResult = await SendUdpProbeAsync(targetIPAddress, result.Hop);
-                            if (udpResult != null)
+                            if (udpResult?.Address != null)
                             {
-                                result.IpAddress = udpResult.Address?.ToString() ?? "Unknown";
+                                result.IpAddress = udpResult.Address.ToString();
                                 result.Hostname = ResolveDns ? GetHostName(udpResult.Address) : "Unknown";
                                 result.Status = "Inferred via UDP";
                             }
@@ -206,7 +206,7 @@ namespace Qoip.ZeroTrustNetwork.NetworkConnectivity
                     if (await Task.WhenAny(connectTask, Task.Delay(Timeout)) == connectTask)
                     {
                         // Connection successful
-                        return (IPEndPoint)tcpClient.Client.RemoteEndPoint;
+                        return tcpClient.Client.RemoteEndPoint as IPEndPoint;
                     }
                     else
                     {
@@ -223,21 +223,10 @@ namespace Qoip.ZeroTrustNetwork.NetworkConnectivity
                 }
                 throw;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                Console.WriteLine($"Error in SendTcpProbeAsync: {ex.Message}");
                 return null;
             }
-        }
-
-        private IPEndPoint? SendUdpProbe(IPAddress targetIPAddress, int ttl)
-        {
-            return SendUdpProbeAsync(targetIPAddress, ttl).GetAwaiter().GetResult();
-        }
-
-        private IPEndPoint? SendTcpProbe(IPAddress targetIPAddress, int ttl)
-        {
-            return SendTcpProbeAsync(targetIPAddress, ttl).GetAwaiter().GetResult();
         }
 
         private string GetHostName(IPAddress address)

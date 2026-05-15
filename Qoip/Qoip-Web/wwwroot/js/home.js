@@ -50,6 +50,7 @@ const app = createApp(defineComponent({
                 try {
                     const response = yield axios.get(`/api/networkconnectivity/whois?ipAddress=${ipAddress}`);
                     this.whoisInfo[ipAddress] = response.data;
+                    console.log(response);
                 }
                 catch (error) {
                     console.error(`Error fetching WHOIS information for ${ipAddress}:`, error);

@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Qoip.ZeroTrustNetwork.NetworkConnectivity;
+﻿using Microsoft.AspNetCore.Mvc;
 using Qoip.ZeroTrustNetwork.SecurityEncryption;
 
 namespace Qoip.Web.Api
@@ -23,8 +21,7 @@ namespace Qoip.Web.Api
                 return BadRequest("URL is required.");
             }
 
-            var certificateValidationRequest = new CertificateValidationRequest(url, expirationWarningThresholdInDays);
-            var response = certificateValidationRequest.Execute();
+            var response = _securityEncryption.ValidateCertificate(url, expirationWarningThresholdInDays);
             return Ok(response);
         }
     }

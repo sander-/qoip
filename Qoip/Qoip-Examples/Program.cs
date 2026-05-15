@@ -61,8 +61,11 @@ namespace Qoip_Examples
 
             Console.WriteLine("Performing Traceroute with DNS resolution");
             var dnsRequest = networkConnectivity.ExecuteDnsRequest("example.com");
-            var traceRouteResponseB = networkConnectivity.ExecuteTraceRouteRequest(dnsRequest.Data.FirstRecord, resolveDns: true);
-            PrintResponse(traceRouteResponseB);
+            if (dnsRequest.Data != null)
+            {
+                var traceRouteResponseB = networkConnectivity.ExecuteTraceRouteRequest(dnsRequest.Data.FirstRecord, resolveDns: true);
+                PrintResponse(traceRouteResponseB);
+            }
 
             Console.WriteLine("Performing Traceroute with DNS resolution using a Fluent API");
             var traceRouteResponseC = networkConnectivity

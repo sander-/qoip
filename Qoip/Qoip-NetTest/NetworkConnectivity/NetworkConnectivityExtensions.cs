@@ -29,11 +29,6 @@ namespace Qoip.ZeroTrustNetwork.NetworkConnectivity
             return networkConnectivity;
         }
 
-        public static Response<DnsResponse> ExecuteDnsRequest(this NetworkConnectivity networkConnectivity, string domainName)
-        {
-            return networkConnectivity.ExecuteDnsRequest(domainName, networkConnectivity.DnsServer, networkConnectivity.Timeout, networkConnectivity.DetailLevel, networkConnectivity.QueryType);
-        }
-
         public static TResult Then<T, TResult>(this Response<T> response, Func<T, TResult> func)
         {
             if (response.Status == ResponseStatus.Ok && response.Data != null)
