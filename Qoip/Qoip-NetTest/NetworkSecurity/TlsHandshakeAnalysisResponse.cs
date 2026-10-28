@@ -10,12 +10,7 @@ namespace Qoip.ZeroTrustNetwork.NetworkSecurity
         public DetailLevel DetailLevel { get; set; }
         public bool HandshakeSucceeded { get; set; }
         public string NegotiatedSslProtocol { get; set; } = string.Empty;
-        public string CipherAlgorithm { get; set; } = string.Empty;
-        public int CipherStrength { get; set; }
-        public string HashAlgorithm { get; set; } = string.Empty;
-        public int HashStrength { get; set; }
-        public string KeyExchangeAlgorithm { get; set; } = string.Empty;
-        public int KeyExchangeStrength { get; set; }
+        public string NegotiatedCipherSuite { get; set; } = string.Empty;
         public string CertificateSubject { get; set; } = string.Empty;
         public string CertificateIssuer { get; set; } = string.Empty;
         public DateTime CertificateValidFrom { get; set; }
